@@ -21,7 +21,7 @@ div
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "nuxt-property-decorator"
+import { Component, Vue, Prop, Action } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
 
 declare let navigator: any
@@ -37,6 +37,7 @@ export default class WebcamStreamComponent extends Vue {
   video!: HTMLVideoElement
   poses!: any
 
+  @Action("setKeypoints", { namespace: "player" }) setKeypoints: Function
   async mounted() {
     this.video = await this.loadVideo()
 
@@ -107,7 +108,13 @@ export default class WebcamStreamComponent extends Vue {
   }
 
   async posesLoop() {
-    await this.poses.poseDetectionFrame()
+    const minPoseConfidence = 0.1
+
+    const pose = await this.poses.poseDetectionFrame()
+    if (pose.score >= minPoseConfidence) {
+      this.setKeypoints(pose.keypoints)
+    }
+
     if (this.poseDetection) {
       window.requestAnimationFrame(this.posesLoop)
     }

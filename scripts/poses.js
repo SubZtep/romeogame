@@ -15,16 +15,11 @@ export default class Poses {
   }
 
   async poseDetectionFrame() {
-    let poses = []
     const minPoseConfidence = 0.1
     const minPartConfidence = 0.5
 
     // Single pose
     const pose = await this.net.estimateSinglePose(this.video, 1, true, this.isMobile ? 16 : 32)
-    console.log("POSE", pose)
-    poses = poses.concat(pose)
-
-    //console.log("POSES", poses)
 
     this.ctx.clearRect(0, 0, this.videoWidth, this.videoHeight)
 
@@ -35,17 +30,17 @@ export default class Poses {
     this.ctx.drawImage(this.video, 0, 0, this.videoWidth, this.videoHeight)
     this.ctx.restore()
 
-    poses.forEach(({ score, keypoints }) => {
-      if (score >= minPoseConfidence) {
-        // Points
-        drawKeypoints(keypoints, minPartConfidence, this.ctx)
+    if (pose.score >= minPoseConfidence) {
+      // Points
+      drawKeypoints(pose.keypoints, minPartConfidence, this.ctx)
 
-        // Skeleton
-        //drawSkeleton(keypoints, minPartConfidence, this.ctx)
+      // Skeleton
+      //drawSkeleton(pose.keypoints, minPartConfidence, this.ctx)
 
-        // Bounding box
-        //drawBoundingBox(keypoints, this.ctx)
-      }
-    })
+      // Bounding box
+      //drawBoundingBox(pose.keypoints, this.ctx)
+    }
+
+    return pose
   }
 }

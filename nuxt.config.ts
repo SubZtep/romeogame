@@ -1,5 +1,5 @@
-import NuxtConfiguration from "@nuxt/config"
 import fs from "fs"
+import NuxtConfiguration from "@nuxt/config"
 
 const config: NuxtConfiguration = {
   mode: "universal",
@@ -11,7 +11,7 @@ const config: NuxtConfiguration = {
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { hid: "description", name: "description", content: "Play with romeogame" }
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
     // script: [
     //   { src: "https://unpkg.com/@tensorflow/tfjs", type: "text/javascript" },
     //   { src: "https://unpkg.com/@tensorflow-models/posenet", type: "text/javascript" }
