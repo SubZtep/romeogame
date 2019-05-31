@@ -5,3 +5,11 @@
 body {
   @apply bg-orange-800;
 }
+
+button {
+  @apply bg-orange-500 text-orange-900 font-bold py-2 px-4 border-b-4 border-orange-700 rounded;
+}
+
+button:hover {
+  @apply bg-orange-400 border-orange-500;
+}

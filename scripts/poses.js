@@ -6,29 +6,12 @@ export default class Poses {
     this.video = video
     this.ctx = ctx
     this.isMobile = isMobile
+    this.videoWidth = this.video.videoWidth
+    this.videoHeight = this.video.videoHeight
   }
 
-  // constructor() {
-  //   return async () => {
-  //     this.net = await posenet.load({
-  //       architecture: this.isMobile ? "MobileNetV1" : "ResNet50",
-  //       outputStride: this.isMobile ? 16 : 32,
-  //       inputResolution: 257,
-  //       multiplier: this.isMobile ? 0.5 : 1.0
-  //     })
-  //     return this
-  //   }
-  // }
-
   async init() {
-    // this.net = await posenet.load({
-    //   architecture: this.isMobile ? "MobileNetV1" : "ResNet50",
-    //   outputStride: this.isMobile ? 16 : 32,
-    //   inputResolution: 257,
-    //   multiplier: this.isMobile ? 0.5 : 1.0
-    // })
     this.net = await posenet.load()
-    console.log("NET", this.net)
   }
 
   async poseDetectionFrame() {
@@ -37,13 +20,11 @@ export default class Poses {
     const minPartConfidence = 0.5
 
     // Single pose
-    const pose = await this.net.estimateSinglePose(this.video, 1, {
-      flipHorizontal: true,
-      decodingMethod: "single-person"
-    })
+    const pose = await this.net.estimateSinglePose(this.video, 1, true, this.isMobile ? 16 : 32)
+    console.log("POSE", pose)
     poses = poses.concat(pose)
 
-    console.log("POSES", poses)
+    //console.log("POSES", poses)
 
     this.ctx.clearRect(0, 0, this.videoWidth, this.videoHeight)
 
@@ -60,10 +41,10 @@ export default class Poses {
         drawKeypoints(keypoints, minPartConfidence, this.ctx)
 
         // Skeleton
-        drawSkeleton(keypoints, minPartConfidence, this.ctx)
+        //drawSkeleton(keypoints, minPartConfidence, this.ctx)
 
         // Bounding box
-        drawBoundingBox(keypoints, this.ctx)
+        //drawBoundingBox(keypoints, this.ctx)
       }
     })
   }

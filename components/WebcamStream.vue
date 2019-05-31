@@ -1,30 +1,35 @@
 <template lang="pug">
 div
-  video(
-    ref="video"
-    :class="$style.video"
-    playsinline)
-  canvas(
-    ref="output")
-
-
   button(v-if="poseDetection" @click="poseDetection = false") STOP POSE DETECTION
   button(v-else @click="detectPoseInRealTime") START POSE DETECTION
+
+  .relative(
+    :class="$style.cb"
+    :style="`width: ${videoWidth}px; height: ${videoHeight}px`")
+
+    video.absolute.border-dashed.border-4.border-red-600(
+      ref="video"
+      :class="$style.video"
+      :style="`width: ${videoWidth}px; height: ${videoHeight}px`"
+      playsinline)
+
+    canvas.absolute.border-dotted.border-4.border-red-800(
+      ref="output"
+      :class="$style.cb"
+      :style="`width: ${videoWidth}px; height: ${videoHeight}px`")
+
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
 
-//type navigator = any
-//type posenet = any
-//declare let posenet: any
 declare let navigator: any
 
 @Component
 export default class WebcamStreamComponent extends Vue {
-  @Prop({ default: 640 }) videoWidth!: number
-  @Prop({ default: 480 }) videoHeight!: number
+  @Prop({ default: 352 }) videoWidth!: number
+  @Prop({ default: 288 }) videoHeight!: number
 
   poseDetection = false
 
@@ -55,13 +60,17 @@ export default class WebcamStreamComponent extends Vue {
     const video: HTMLVideoElement = this.$refs.video as HTMLVideoElement
     video.width = this.videoWidth
     video.height = this.videoHeight
+    // video.style.width = this.videoWidth + "px"
+    // video.style.height = this.videoHeight + "px"
 
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
         facingMode: "user",
-        width: this.isMobile ? undefined : this.videoWidth,
-        height: this.isMobile ? undefined : this.videoHeight
+        width: this.videoWidth,
+        height: this.videoHeight
+        // width: this.isMobile ? undefined : this.videoWidth,
+        // height: this.isMobile ? undefined : this.videoHeight
       }
     })
 
@@ -73,6 +82,8 @@ export default class WebcamStreamComponent extends Vue {
     // })
 
     video.srcObject = stream
+
+    //console.log("STREAM", stream.getVideoTracks()[0].getSettings())
 
     return new Promise(resolve => {
       video.onloadedmetadata = () => {
@@ -105,7 +116,10 @@ export default class WebcamStreamComponent extends Vue {
 </script>
 
 <style module>
-/* .video {
+.video {
   transform: scaleX(-1);
-} */
+}
+.cb {
+  box-sizing: content-box;
+}
 </style>

@@ -7,15 +7,11 @@
   "parserOptions": {
     "parser": "@typescript-eslint/parser"
   },
-  "extends": [
-    "@nuxtjs",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": [
-    "@typescript-eslint"
-  ],
+  "extends": ["@nuxtjs", "plugin:prettier/recommended"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "no-unused-vars": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "spaced-comment": "off"
   }
 }
