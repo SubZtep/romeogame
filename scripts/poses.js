@@ -11,15 +11,26 @@ export default class Poses {
   }
 
   async init() {
-    this.net = await posenet.load()
+    this.net = await posenet.load({
+      architecture: "ResNet50",
+      outputStride: 32,
+      inputResolution: 257,
+      quantBytes: 2
+    })
   }
 
-  async poseDetectionFrame() {
-    const minPoseConfidence = 0.1
-    const minPartConfidence = 0.5
-
+  async poseDetectionFrame(minPoseConfidence = 0.1, minPartConfidence = 0.5) {
     // Single pose
-    const pose = await this.net.estimateSinglePose(this.video, 1, true, this.isMobile ? 16 : 32)
+    //const pose = await this.net.estimateSinglePose(this.video, 1, true, this.isMobile ? 16 : 32)
+    const poses = await this.net.estimatePoses(this.video, {
+      flipHorizontal: true,
+      decodingMethod: "single-person"
+    })
+
+    if (poses.length !== 1) {
+      throw new Error("Not one pose")
+    }
+    const pose = poses[0]
 
     this.ctx.clearRect(0, 0, this.videoWidth, this.videoHeight)
 

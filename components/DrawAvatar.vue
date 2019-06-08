@@ -12,7 +12,7 @@ import Avatar from "~/scripts/avatar"
 import * as BABYLON from "babylonjs"
 import Joints from "~/scripts/joints"
 import Transform from "~/scripts/transform"
-import { Keypoint } from "@tensorflow-models/posenet"
+import { Keypoint } from "@tensorflow-models/posenet/dist/types"
 import { DudeBones } from "~/types/bones"
 import { transform } from "@babel/core"
 

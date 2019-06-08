@@ -8,7 +8,7 @@
         :width="352"
         :height="288")
     .bg-red-900.p-2
-      DrawAvatar(:running="showWebcam")
+      DrawStickman(:running="showWebcam")
     .bg-green-900.text-xs.text-yellow-500.p-2
       pre {{ debugKeypoints() }}
 </template>
@@ -16,9 +16,9 @@
 <script lang="ts">
 import { Component, Vue, Getter } from "nuxt-property-decorator"
 import WebcamStream from "~/components/WebcamStream.vue"
-import DrawAvatar from "~/components/DrawAvatar.vue"
+import DrawStickman from "~/components/DrawStickman.vue"
 
-@Component({ components: { WebcamStream, DrawAvatar } })
+@Component({ components: { WebcamStream, DrawStickman } })
 export default class IndexPage extends Vue {
   showWebcam = false
   @Getter("getKeypoints", { namespace: "player" }) keypoints

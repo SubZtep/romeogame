@@ -6,11 +6,9 @@
  * Thanks for the math https://github.com/mishig25/3d-posenet
  */
 import * as BABYLON from "babylonjs"
-import { Keypoint } from "@tensorflow-models/posenet"
-import { Vector2D } from "@tensorflow-models/posenet/dist/types"
+import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { Keypoints } from "~/types/pose"
 import Joints from "./joints"
-import { TFHUB_SEARCH_PARAM } from "@tensorflow/tfjs-converter/dist/src/executor/graph_model"
 
 export default class Transform {
   joints: Joints
@@ -101,7 +99,7 @@ export default class Transform {
       y = this.shoulderCenter.y - y
       //console.log([x, y]) // [ 1.2153144580672957, 77.42203934368919 ]
 
-      console.log([this.keypoints["nose"], { x, y }])
+      //console.log([this.keypoints["nose"], { x, y }])
 
       // normalize (i.e. scale it)
       y = this.map(y, this.distance * 1.5, this.distance * 2.8, -2, 2)

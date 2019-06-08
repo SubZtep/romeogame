@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
-    "@tensorflow-models/posenet": "^1.0.3",
+    "@tensorflow-models/posenet": "^2.0.0",
     "@tensorflow/tfjs": "^1.1.2",
     "babylonjs": "^4.0.3",
     "cross-env": "^5.2.0",

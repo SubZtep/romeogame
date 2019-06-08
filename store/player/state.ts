@@ -1,5 +1,6 @@
 import { PlayerState } from "~/types/stores"
 
 export default (): PlayerState => ({
-  keypoints: []
+  keypoints: [],
+  adjacents: []
 })

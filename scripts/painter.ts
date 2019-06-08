@@ -4,6 +4,7 @@ export default class {
   canvas: HTMLCanvasElement
   engine: BABYLON.Engine
   scene: BABYLON.Scene
+  camera: BABYLON.UniversalCamera
   dots: BABYLON.Mesh[] = []
 
   constructor(canvas: HTMLCanvasElement) {
@@ -17,17 +18,8 @@ export default class {
     this.scene = new BABYLON.Scene(this.engine)
     this.scene.clearColor = new BABYLON.Color4(0.1, 0.4, 0.1)
 
-    const camera = new BABYLON.ArcRotateCamera(
-      "camera",
-      0,
-      1,
-      20,
-      BABYLON.Vector3.Zero(),
-      this.scene
-    )
-    camera.setTarget(new BABYLON.Vector3(0, 8, 0))
-    camera.setPosition(new BABYLON.Vector3(0, 9, 20))
-    camera.attachControl(this.canvas, true)
+    this.camera = new BABYLON.UniversalCamera("camera", BABYLON.Vector3.Zero(), this.scene)
+    this.camera.attachControl(this.canvas, true)
 
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene)
     light.intensity = 0.7
@@ -54,5 +46,17 @@ export default class {
 
     const length = this.dots.push(sphere)
     return length - 1
+  }
+
+  createJoint(color: BABYLON.Color3): BABYLON.Mesh {
+    const mat = new BABYLON.StandardMaterial("red", this.scene)
+    mat.alpha = 1
+    mat.diffuseColor = color
+
+    const sphere = BABYLON.MeshBuilder.CreateBox("", { size: 10 }, this.scene)
+    sphere.material = mat
+    sphere.position = new BABYLON.Vector3(0, 0, 0)
+
+    return sphere
   }
 }

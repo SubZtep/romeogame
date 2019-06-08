@@ -25,6 +25,29 @@ export interface Keypoints {
 }
 
 /**
+ * Posenet joint points
+ */
+export interface Keymeshes {
+  nose?: BABYLON.Mesh
+  leftEye?: BABYLON.Mesh
+  rightEye?: BABYLON.Mesh
+  leftEar?: BABYLON.Mesh
+  rightEar?: BABYLON.Mesh
+  leftShoulder?: BABYLON.Mesh
+  rightShoulder?: BABYLON.Mesh
+  leftElbow?: BABYLON.Mesh
+  rightElbow?: BABYLON.Mesh
+  leftWrist?: BABYLON.Mesh
+  rightWrist?: BABYLON.Mesh
+  leftHip?: BABYLON.Mesh
+  rightHip?: BABYLON.Mesh
+  leftKnee?: BABYLON.Mesh
+  rightKnee?: BABYLON.Mesh
+  leftAnkle?: BABYLON.Mesh
+  rightAnkle?: BABYLON.Mesh
+}
+
+/**
  * Calculated avatar joint points
  */
 export interface Joints {

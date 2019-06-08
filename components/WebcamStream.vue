@@ -23,7 +23,9 @@ div
 <script lang="ts">
 import { Component, Vue, Prop, Action } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
-import { Pose } from "@tensorflow-models/posenet"
+import { Pose } from "@tensorflow-models/posenet/dist/types"
+import { getAdjacentKeyPoints } from "@tensorflow-models/posenet/dist/util"
+import { minPoseConfidence, minPartConfidence } from "~/scripts/settings"
 
 declare let navigator: any
 
@@ -37,9 +39,11 @@ export default class WebcamStreamComponent extends Vue {
   ctx!: CanvasRenderingContext2D
   video!: HTMLVideoElement
   stream!: MediaStream
-  poses!: any
+  poses!: Poses
 
   @Action("setKeypoints", { namespace: "player" }) setKeypoints: Function
+  @Action("setAdjacents", { namespace: "player" }) setAdjacents: Function
+
   async mounted() {
     // Load video
     this.video = await this.setupCamera()
@@ -110,11 +114,10 @@ export default class WebcamStreamComponent extends Vue {
   }
 
   async posesLoop() {
-    const minPoseConfidence = 0.1
-
-    const pose: Pose = await this.poses.poseDetectionFrame()
+    const pose: Pose = await this.poses.poseDetectionFrame(minPoseConfidence, minPartConfidence)
     if (pose.score >= minPoseConfidence) {
       this.setKeypoints(pose.keypoints)
+      this.setAdjacents(getAdjacentKeyPoints(pose.keypoints, minPartConfidence))
     }
 
     if (this.poseDetection) {

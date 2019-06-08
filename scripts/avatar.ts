@@ -1,12 +1,12 @@
 import * as BABYLON from "babylonjs"
 import Painter from "~/scripts/painter"
-import { AbstractMesh, IParticleSystem, Skeleton, AnimationGroup, Nullable } from "babylonjs"
+// import { AbstractMesh, IParticleSystem, Skeleton, AnimationGroup, Nullable } from "babylonjs"
 import { DudeBones } from "~/types/bones"
-import Joints from "~/scripts/joints"
+// import Joints from "~/scripts/joints"
 import Transform from "~/scripts/transform"
-import { Keypoint } from "@tensorflow-models/posenet"
-import { Vector2D } from "@tensorflow-models/posenet/dist/types"
-import { Keypoints } from "~/types/pose"
+import { Keypoint } from "@tensorflow-models/posenet/dist/types"
+// import { Vector2D } from "@tensorflow-models/posenet/dist/types"
+// import { Keypoints } from "~/types/pose"
 
 export default class Avatar {
   running: boolean = true
