@@ -5,48 +5,58 @@ div
 
   .relative(
     :class="$style.cb"
-    :style="`width: ${videoWidth}px; height: ${videoHeight}px`")
+    :style="`width: ${width}px; height: ${height}px`")
 
     video.absolute.border-dashed.border-4.border-red-600(
       ref="video"
       :class="$style.video"
-      :style="`width: ${videoWidth}px; height: ${videoHeight}px`"
-      playsinline)
+      playsinline
+      :style="`width: ${width}px; height: ${height}px`")
 
     canvas.absolute.border-dotted.border-4.border-red-800(
       ref="output"
       :class="$style.cb"
-      :style="`width: ${videoWidth}px; height: ${videoHeight}px`")
+      :style="`width: ${width}px; height: ${height}px`")
 
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Action } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
+import { Pose } from "@tensorflow-models/posenet"
 
 declare let navigator: any
 
 @Component
 export default class WebcamStreamComponent extends Vue {
-  @Prop({ default: 352 }) videoWidth!: number
-  @Prop({ default: 288 }) videoHeight!: number
+  @Prop({ default: 352 }) width!: number
+  @Prop({ default: 288 }) height!: number
 
   poseDetection = false
 
   ctx!: CanvasRenderingContext2D
   video!: HTMLVideoElement
+  stream!: MediaStream
   poses!: any
 
   @Action("setKeypoints", { namespace: "player" }) setKeypoints: Function
   async mounted() {
-    this.video = await this.loadVideo()
+    // Load video
+    this.video = await this.setupCamera()
+    this.video.play()
 
     const canvas = this.$refs.output as HTMLCanvasElement
     this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    canvas.width = this.videoWidth
-    canvas.height = this.videoHeight
+    canvas.width = this.width
+    canvas.height = this.height
 
-    //await this.detectPoseInRealTime()
+    this.detectPoseInRealTime()
+  }
+
+  beforeDestroy() {
+    this.poseDetection = false
+    this.video.pause()
+    this.stream.getTracks()[0].stop()
   }
 
   get isMobile(): boolean {
@@ -59,19 +69,17 @@ export default class WebcamStreamComponent extends Vue {
     }
 
     const video: HTMLVideoElement = this.$refs.video as HTMLVideoElement
-    video.width = this.videoWidth
-    video.height = this.videoHeight
-    // video.style.width = this.videoWidth + "px"
-    // video.style.height = this.videoHeight + "px"
+    video.width = this.width
+    video.height = this.height
 
-    const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
+    this.stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
         facingMode: "user",
-        width: this.videoWidth,
-        height: this.videoHeight
-        // width: this.isMobile ? undefined : this.videoWidth,
-        // height: this.isMobile ? undefined : this.videoHeight
+        width: this.width,
+        height: this.height
+        // width: this.isMobile ? undefined : this.width,
+        // height: this.isMobile ? undefined : this.height
       }
     })
 
@@ -82,7 +90,7 @@ export default class WebcamStreamComponent extends Vue {
     //   frameRate: { exact: 30 }
     // })
 
-    video.srcObject = stream
+    video.srcObject = this.stream
 
     //console.log("STREAM", stream.getVideoTracks()[0].getSettings())
 
@@ -91,12 +99,6 @@ export default class WebcamStreamComponent extends Vue {
         resolve(video)
       }
     })
-  }
-
-  async loadVideo() {
-    const video: HTMLVideoElement = await this.setupCamera()
-    video.play()
-    return video
   }
 
   async detectPoseInRealTime() {
@@ -110,7 +112,7 @@ export default class WebcamStreamComponent extends Vue {
   async posesLoop() {
     const minPoseConfidence = 0.1
 
-    const pose = await this.poses.poseDetectionFrame()
+    const pose: Pose = await this.poses.poseDetectionFrame()
     if (pose.score >= minPoseConfidence) {
       this.setKeypoints(pose.keypoints)
     }
@@ -128,5 +130,6 @@ export default class WebcamStreamComponent extends Vue {
 }
 .cb {
   box-sizing: content-box;
+  filter: invert(100%) hue-rotate(250deg);
 }
 </style>

@@ -1,6 +1,4 @@
-export interface PlayerState {
-  keypoints: any
-}
+import { PlayerState } from "~/types/stores"
 
 export default (): PlayerState => ({
   keypoints: []

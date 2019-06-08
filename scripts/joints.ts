@@ -1,24 +1,29 @@
-export default class Joints {
-  data: any
+import * as BABYLON from "babylonjs"
+import { Joints } from "~/types/pose"
 
-  constructor() {
-    this.data = {
-      rightShoulder: 0,
-      rightElbow: 0,
-      leftShoulder: 0,
-      leftElbow: 0,
-      head: {
-        x: 0,
-        y: 0
-      }
-    }
+/**
+ * Calculated joint data
+ */
+export default class {
+  data: Joints = {
+    head: BABYLON.Vector3.Zero(),
+    leftShoulder: BABYLON.Vector3.Zero(),
+    rightShoulder: BABYLON.Vector3.Zero(),
+    leftElbow: BABYLON.Vector3.Zero(),
+    rightElbow: BABYLON.Vector3.Zero()
   }
 
-  update(joint, val) {
+  update(joint: string, val: BABYLON.Vector3) {
     this.data[joint] = val
   }
 
-  get(joint) {
-    return this.data[joint]
+  get(joint: string): BABYLON.Vector3 {
+    const coord: BABYLON.Vector3 = this.data[joint].clone()
+
+    coord.x = 0 + coord.x
+    coord.y = 6 + coord.y
+    coord.z = 5
+
+    return coord
   }
 }
