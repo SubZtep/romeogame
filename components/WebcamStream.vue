@@ -9,13 +9,13 @@ div
 
     video.absolute.border-dashed.border-4.border-red-600(
       ref="video"
-      :class="$style.video"
+      :class="{ [$style.video]: !haluCam }"
       playsinline
       :style="`width: ${width}px; height: ${height}px`")
 
     canvas.absolute.border-dotted.border-4.border-red-800(
       ref="output"
-      :class="$style.cb"
+      :class="{ [$style.cb]: true, 'opacity-50': haluCam }"
       :style="`width: ${width}px; height: ${height}px`")
 
 </template>
@@ -25,7 +25,7 @@ import { Component, Vue, Prop, Action } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
 import { Pose } from "@tensorflow-models/posenet/dist/types"
 import { getAdjacentKeyPoints } from "@tensorflow-models/posenet/dist/util"
-import { minPoseConfidence, minPartConfidence } from "~/scripts/settings"
+import { minPoseConfidence, minPartConfidence, haluCam } from "~/scripts/settings"
 
 declare let navigator: any
 
@@ -34,6 +34,7 @@ export default class WebcamStreamComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
 
+  haluCam: boolean = haluCam
   poseDetection = false
 
   ctx!: CanvasRenderingContext2D
