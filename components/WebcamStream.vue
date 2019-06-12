@@ -121,7 +121,6 @@ export default class WebcamStreamComponent extends Vue {
   async posesLoop() {
     // Get keypointsd and draw on camera view
     const pose: Pose = await this.poses.poseDetectionFrame(minPoseConfidence, minPartConfidence)
-
     if (pose.score >= minPoseConfidence) {
       this.setKeypoints(pose.keypoints)
       if (this.adjacents) {

@@ -42,22 +42,28 @@ export enum DudeBones {
   ______leftFoot = 57
 }
 
-export enum DudePosenetBones {
-  // nose
-  leftEye = DudeBones.________leftEye,
-  rightEye = DudeBones.________rightEye,
-  // leftEar
-  // rightEar
-  leftShoulder = DudeBones.________leftShoulder,
-  rightShoulder = DudeBones.________rightShoulder,
-  leftElbow = DudeBones._________leftElbow,
-  rightElbow = DudeBones._________rightElbow,
-  leftWrist = DudeBones.__________leftWrist,
-  rightWrist = DudeBones.__________rightWrist,
-  leftHip = DudeBones.___leftHip,
-  rightHip = DudeBones.___rightHip,
-  leftKnee = DudeBones.____leftKnee,
-  rightKnee = DudeBones.____rightKnee,
-  leftAnkle = DudeBones._____leftAnkle,
-  rightAnkle = DudeBones._____rightAnkle
+export enum PosenetBones {
+  nose = 0,
+  leftEye = 1,
+  rightEye = 2,
+  leftEar = 3,
+  rightEar = 4,
+  leftShoulder = 5,
+  rightShoulder = 6,
+  leftElbow = 7,
+  rightElbow = 8,
+  leftWrist = 9,
+  rightWrist = 10,
+  leftHip = 11,
+  rightHip = 12,
+  leftKnee = 13,
+  rightKnee = 14,
+  leftAnkle = 15,
+  rightAnkle = 16
+}
+
+export enum RomeoBones {
+  root = 100,
+  _waist = 101,
+  _head = 102
 }
