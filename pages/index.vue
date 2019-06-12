@@ -10,6 +10,7 @@
         :width="352"
         :height="288"
         :adjacents="false")
+      RecordTPose.mt-3(v-if="showWebcam")
 
     //- Game view
     .bg-red-900.p-2
@@ -26,8 +27,9 @@ import { Component, Vue, Getter } from "nuxt-property-decorator"
 import WebcamStream from "~/components/WebcamStream.vue"
 import DrawStickman from "~/components/DrawStickman.vue"
 import DrawAvatar from "~/components/DrawAvatar.vue"
+import RecordTPose from "~/components/RecordTPose.vue"
 
-@Component({ components: { WebcamStream, DrawStickman, DrawAvatar } })
+@Component({ components: { WebcamStream, DrawStickman, DrawAvatar, RecordTPose } })
 export default class IndexPage extends Vue {
   showWebcam = false
   @Getter("getKeypoints", { namespace: "player" }) keypoints
