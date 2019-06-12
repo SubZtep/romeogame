@@ -29,10 +29,14 @@ import { minPoseConfidence, minPartConfidence, haluCam } from "~/scripts/setting
 
 declare let navigator: any
 
+/**
+ * Webcam input, populate Vuex player store
+ */
 @Component
 export default class WebcamStreamComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
+  @Prop({ default: false }) adjacents!: boolean
 
   haluCam: boolean = haluCam
   poseDetection = false
@@ -115,10 +119,14 @@ export default class WebcamStreamComponent extends Vue {
   }
 
   async posesLoop() {
+    // Get keypointsd and draw on camera view
     const pose: Pose = await this.poses.poseDetectionFrame(minPoseConfidence, minPartConfidence)
+
     if (pose.score >= minPoseConfidence) {
       this.setKeypoints(pose.keypoints)
-      this.setAdjacents(getAdjacentKeyPoints(pose.keypoints, minPartConfidence))
+      if (this.adjacents) {
+        this.setAdjacents(getAdjacentKeyPoints(pose.keypoints, minPartConfidence))
+      }
     }
 
     if (this.poseDetection) {

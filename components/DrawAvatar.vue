@@ -1,13 +1,10 @@
 <template lang="pug">
-div(:class="$style.drawGrid")
-  canvas(ref="render" :class="$style.canvas")
-  //-.mt-1(v-if="loaded")
-    | Left elbow: {{ transform.joints.data.leftElbow }}
+canvas(ref="render" :class="$style.canvas")
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Getter, Watch } from "nuxt-property-decorator"
-import Painter from "~/scripts/painter"
+import PaintAvatar from "~/scripts/paint-avatar"
 import Avatar from "~/scripts/avatar"
 import * as BABYLON from "babylonjs"
 import Joints from "~/scripts/joints"
@@ -25,8 +22,8 @@ export default class DrawAvatarComponent extends Vue {
   @Getter("getKeypoints", { namespace: "player" }) getKeypoints
 
   loaded = false
-  painter: Painter
-  transform: Transform
+  painter: PaintAvatar
+  //transform: Transform
   avatar: Avatar
 
   @Watch("getKeypoints")
@@ -34,16 +31,16 @@ export default class DrawAvatarComponent extends Vue {
     this.avatar.updateKeypoints(keypoints)
   }
 
-  @Watch("running")
-  onRunningChange(isRunning) {
-    this.avatar.running = isRunning
-  }
+  // @Watch("running")
+  // onRunningChange(isRunning) {
+  //   this.avatar.running = isRunning
+  // }
 
   mounted() {
-    const joints = new Joints()
-    this.transform = new Transform(joints)
+    // const joints = new Joints()
+    // this.transform = new Transform(joints)
 
-    this.painter = new Painter(this.$refs.render as HTMLCanvasElement)
+    this.painter = new PaintAvatar(this.$refs.render as HTMLCanvasElement)
     this.painter.gameLoop()
 
     BABYLON.SceneLoader.ImportMesh(
@@ -56,19 +53,15 @@ export default class DrawAvatarComponent extends Vue {
   }
 
   onAvatarImported(meshes, particleSystems, skeletons) {
-    this.avatar = new Avatar(this.painter, this.transform, meshes[0], skeletons[0])
-    this.avatar.running = this.running
+    console.log("AVATAR LOADED")
+    this.avatar = new Avatar(meshes[0], skeletons[0])
+    //this.avatar.running = this.running
     this.loaded = true
   }
 }
 </script>
 
 <style module>
-.drawGrid {
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 50px;
-}
 .canvas {
   width: 100%;
   height: 100%;
