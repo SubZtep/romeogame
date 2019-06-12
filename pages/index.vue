@@ -14,8 +14,8 @@
 
     //- Game view
     .bg-red-900.p-2
-      //-DrawStickman(:running="showWebcam")
-      DrawAvatar(:running="showWebcam")
+      DrawStickman(:running="showWebcam")
+      //-DrawAvatar(:running="showWebcam")
 
     //- Debug console
     //-.bg-green-900.text-xs.text-yellow-500.p-2

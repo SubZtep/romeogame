@@ -57,6 +57,15 @@ export default class DrawAvatarComponent extends Vue {
     this.avatar = new Avatar(meshes[0], skeletons[0])
     //this.avatar.running = this.running
     this.loaded = true
+
+    this.initJoints()
+  }
+
+  initJoints() {
+    const tPoseStr: string | null = localStorage.getItem("TPose")
+    if (tPoseStr !== null) {
+      this.avatar.setKeypoints(JSON.parse(tPoseStr))
+    }
   }
 }
 </script>

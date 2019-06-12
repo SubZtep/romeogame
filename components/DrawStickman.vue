@@ -7,7 +7,7 @@ import { Component, Vue, Prop, Getter, Watch } from "nuxt-property-decorator"
 import PaintStickman from "~/scripts/paint-stickman"
 import * as BABYLON from "babylonjs"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
-import { Keymeshes } from "~/types/pose"
+import { Keypoints, Keymeshes } from "~/types/pose"
 
 @Component
 export default class DrawStickmanComponent extends Vue {
@@ -57,6 +57,13 @@ export default class DrawStickmanComponent extends Vue {
       rightKnee: this.painter.createJoint(new BABYLON.Color3(1, 0, 0)),
       leftAnkle: this.painter.createJoint(new BABYLON.Color3(0, 0, 0)),
       rightAnkle: this.painter.createJoint(new BABYLON.Color3(0, 0, 0))
+    }
+    const tPoseStr: string | null = localStorage.getItem("TPose")
+    if (tPoseStr !== null) {
+      const tPose: Keypoints = JSON.parse(tPoseStr)
+      for (let [key, value] of Object.entries(tPose)) {
+        this.joints[key].position = new BABYLON.Vector3(value.x, value.y, 0)
+      }
     }
   }
 

@@ -1,7 +1,8 @@
 import * as BABYLON from "babylonjs"
-import { DudePosenetBones } from "~/types/bones"
+import { DudePosenetBones, DudeBones } from "~/types/bones"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { minPartConfidence } from "~/scripts/settings"
+import { Keypoints } from "../types/pose"
 
 export default class Avatar {
   mesh: BABYLON.AbstractMesh
@@ -14,6 +15,15 @@ export default class Avatar {
     //this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
     this.mesh.position = new BABYLON.Vector3(300, 200, 300)
     this.mesh.rotation = new BABYLON.Vector3(0, 0, Math.PI)
+  }
+
+  setKeypoints(keypoints: Keypoints): void {
+    for (let [key, value] of Object.entries(keypoints)) {
+      const boneIndex = DudePosenetBones[key]
+      if (boneIndex !== undefined) {
+        this.skeleton.bones[boneIndex].setPosition(new BABYLON.Vector3(value.x, value.y, 300))
+      }
+    }
   }
 
   updateKeypoints(keypoints: Keypoint[]): void {
