@@ -21,7 +21,7 @@ div
 
       RecordTPose.mt-3
 
-  .text-red-600.text-4xl.font-bold(v-if="!loading && vide === null")
+  .text-red-600.text-4xl.font-bold(v-if="!loading && video === null")
     | Webcam is in the hole with spiders!?
 </template>
 
@@ -75,6 +75,8 @@ export default class WebcamStreamComponent extends Vue {
 
       this.detectPoseInRealTime()
     }
+
+    this.loading = false
   }
 
   beforeDestroy() {
