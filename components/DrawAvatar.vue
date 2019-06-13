@@ -14,7 +14,6 @@ import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { DudeBones as DB } from "~/types/bones"
 import { Keypoints } from "~/types/pose"
 import { TPoseStorageName } from "~/scripts/settings"
-import { Vector3 } from "babylonjs"
 import Stickman from "~/scripts/stickman"
 
 @Component
@@ -74,7 +73,7 @@ export default class DrawAvatarComponent extends Vue {
     stickman.transformPositions()
 
     stickman.tPoser.forEach((pos: BABYLON.Vector2, key: string) => {
-      let x = this.painter.createSphere(mat, new BABYLON.Vector3(pos.x, pos.y, 0), 2)
+      const x = this.painter.createSphere(mat, new BABYLON.Vector3(pos.x, pos.y, 0), 2)
     })
   }
 }

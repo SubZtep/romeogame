@@ -66,7 +66,7 @@ export default class DrawStickmanComponent extends Vue {
     const tPoseStr: string | null = localStorage.getItem(TPoseStorageName)
     if (tPoseStr !== null) {
       const tPose: Keypoints = JSON.parse(tPoseStr)
-      for (let [key, value] of Object.entries(tPose)) {
+      for (const [key, value] of Object.entries(tPose)) {
         this.joints[key].position = new BABYLON.Vector3(value.x, value.y, 0)
       }
     }

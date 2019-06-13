@@ -22,7 +22,7 @@ const config: NuxtConfiguration = {
 
   css: ["~/assets/css/tailwind.css"],
 
-  plugins: [],
+  plugins: [{ src: "~/plugins/map-storage.client", mode: "client" }],
 
   modules: ["@nuxtjs/pwa", "nuxt-fontawesome"],
 
