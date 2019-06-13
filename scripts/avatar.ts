@@ -99,10 +99,9 @@ export default class Avatar {
   }
 
   /**
-   * Create all avatar joints
-   * @param kp User movement keypoints, the modifiers
+   * Create all avatar joints from hardcoded values
    */
-  setJoints(kp: Keypoints = {}): void {
+  setJoints(): void {
     //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
 
     // Init default Dude positions
@@ -173,21 +172,18 @@ export default class Avatar {
             break
         }
       })
-
-    //this.jointWalker(this.rootJoint, 0)
-    //TODO: walk on the tree and calculate kp values (1: map joints, 2: centre position, 3: scale)
-    //console.log("KP", kp)
   }
 
-  jointWalker(joint: IJoint, level: number) {
-    console.log("-".repeat(level) + joint.name)
-    //if (joint.hasChild()) {
+  /**
+   * Walk in the bone tree
+   * @param joint Current joint
+   * @param level Current depth
+   */
+  jointWalker(joint: IJoint, level: number = 0) {
+    console.log(`${"-".repeat(level)} ${joint.name} ${joint.position.toString()}`)
     joint.children.forEach(child => {
       this.jointWalker(child, level + 1)
     })
-    // } else {
-    //   console.log("No Children")
-    // }
   }
 
   updateKeypoints(keypoints: Keypoint[]): void {

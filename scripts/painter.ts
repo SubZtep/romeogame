@@ -8,7 +8,6 @@ export default class {
   engine: BABYLON.Engine
   scene: BABYLON.Scene
   camera: BABYLON.TargetCamera
-  dots: BABYLON.Mesh[] = []
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
@@ -81,19 +80,29 @@ export default class {
   }
 
   /**
+   * Create a material from a single colour
+   * @param color
+   */
+  createMaterial(color: BABYLON.Color4): BABYLON.StandardMaterial {
+    const mat = new BABYLON.StandardMaterial(color.toString(), this.scene)
+    mat.alpha = color.a
+    mat.diffuseColor = new BABYLON.Color3(color.r, color.g, color.b)
+    return mat
+  }
+
+  /**
    * Cerate helper sphere
    * @param color Sphere color
    * @returns Dot index
    */
-  addDot(color: BABYLON.Color4, size: number = 1): number {
-    const mat = new BABYLON.StandardMaterial("red", this.scene)
-    mat.alpha = color.a
-    mat.diffuseColor = new BABYLON.Color3(color.r, color.g, color.b)
-
+  createSphere(
+    material: BABYLON.Material,
+    position: BABYLON.Vector3 = BABYLON.Vector3.Zero(),
+    size: number = 1
+  ): BABYLON.Mesh {
     const sphere = BABYLON.MeshBuilder.CreateSphere("", { diameter: size }, this.scene)
-    sphere.material = mat
-
-    const length = this.dots.push(sphere)
-    return length - 1
+    sphere.material = material
+    sphere.position = position
+    return sphere
   }
 }
