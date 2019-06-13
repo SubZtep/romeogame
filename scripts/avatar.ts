@@ -2,10 +2,8 @@ import * as BABYLON from "babylonjs"
 import { DudeBones as DB, PosenetBones } from "~/types/bones"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { minPartConfidence } from "~/scripts/settings"
-import { Keypoints } from "../types/pose"
 import { IJoint } from "~/types/joint"
 import { Joint } from "./joint"
-import { join } from "path"
 
 export default class Avatar {
   mesh: BABYLON.AbstractMesh

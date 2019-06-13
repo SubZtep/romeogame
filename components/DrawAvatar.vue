@@ -59,24 +59,23 @@ export default class DrawAvatarComponent extends Vue {
   }
 
   doTPose() {
+    // Create material for joints
+    const mat: BABYLON.Material = this.painter.createMaterial(
+      BABYLON.Color4.FromColor3(BABYLON.Color3.Blue())
+    )
+
     // Init Stickman
     const stickman: Stickman = new Stickman()
     if (!stickman.loadFromStorage()) {
       throw new Error("No T-pose in local storage")
     }
 
-    // Create material for joints
-    const mat: BABYLON.Material = this.painter.createMaterial(
-      BABYLON.Color4.FromColor3(BABYLON.Color3.Blue())
-    )
-
+    stickman.prepareRawData()
     stickman.transformPositions()
 
-    // Draw joints
-    //console.log("tPoser", stickman.tPoser)
-    // for (let [key, value] of Object.entries(stickman.tPoser)) {
-    //   let x = this.painter.createSphere(mat, new BABYLON.Vector3(value.x, value.y, 0), 2)
-    // }
+    stickman.tPoser.forEach((pos: BABYLON.Vector2, key: string) => {
+      let x = this.painter.createSphere(mat, new BABYLON.Vector3(pos.x, pos.y, 0), 2)
+    })
   }
 }
 </script>
