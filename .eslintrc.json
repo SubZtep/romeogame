@@ -5,7 +5,8 @@
     "node": true
   },
   "parserOptions": {
-    "parser": "@typescript-eslint/parser"
+    "parser": "@typescript-eslint/parser",
+    "ecmaVersion": 2019
   },
   "extends": ["@nuxtjs", "plugin:prettier/recommended"],
   "plugins": ["@typescript-eslint"],

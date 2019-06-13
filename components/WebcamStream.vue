@@ -1,23 +1,28 @@
 <template lang="pug">
 div
-  button(v-if="poseDetection" @click="poseDetection = false") STOP POSE DETECTION
-  button(v-else @click="detectPoseInRealTime") START POSE DETECTION
+  div(v-if="!loading && video !== null")
+    button(v-if="poseDetection" @click="poseDetection = false") STOP POSE DETECTION
+    button(v-else @click="detectPoseInRealTime") START POSE DETECTION
 
-  .relative(
-    :class="$style.cb"
-    :style="`width: ${width}px; height: ${height}px`")
-
-    video.absolute.border-dashed.border-4.border-red-600(
-      ref="video"
-      :class="{ [$style.video]: !haluCam }"
-      playsinline
+    .relative(
+      :class="$style.cb"
       :style="`width: ${width}px; height: ${height}px`")
 
-    canvas.absolute.border-dotted.border-4.border-red-800(
-      ref="output"
-      :class="{ [$style.cb]: true, 'opacity-50': haluCam }"
-      :style="`width: ${width}px; height: ${height}px`")
+      video.absolute.border-dashed.border-4.border-red-600(
+        ref="video"
+        :class="{ [$style.video]: !haluCam }"
+        playsinline
+        :style="`width: ${width}px; height: ${height}px`")
 
+      canvas.absolute.border-dotted.border-4.border-red-800(
+        ref="output"
+        :class="{ [$style.cb]: true, 'opacity-50': haluCam }"
+        :style="`width: ${width}px; height: ${height}px`")
+
+      RecordTPose.mt-3
+
+  .text-red-600.text-4xl.font-bold(v-if="!loading && vide === null")
+    | Webcam is in the hole with spiders!?
 </template>
 
 <script lang="ts">
@@ -26,23 +31,25 @@ import Poses from "~/scripts/poses"
 import { Pose } from "@tensorflow-models/posenet/dist/types"
 import { getAdjacentKeyPoints } from "@tensorflow-models/posenet/dist/util"
 import { minPoseConfidence, minPartConfidence, haluCam } from "~/scripts/settings"
+import RecordTPose from "~/components/RecordTPose.vue"
 
 declare let navigator: any
 
 /**
  * Webcam input, populate Vuex player store
  */
-@Component
+@Component({ components: { RecordTPose } })
 export default class WebcamStreamComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
   @Prop({ default: false }) adjacents!: boolean
 
+  loading = true
   haluCam: boolean = haluCam
   poseDetection = false
 
   ctx!: CanvasRenderingContext2D
-  video!: HTMLVideoElement
+  video!: HTMLVideoElement | null
   stream!: MediaStream
   poses!: Poses
 
@@ -51,21 +58,31 @@ export default class WebcamStreamComponent extends Vue {
 
   async mounted() {
     // Load video
-    this.video = await this.setupCamera()
-    this.video.play()
 
-    const canvas = this.$refs.output as HTMLCanvasElement
-    this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    canvas.width = this.width
-    canvas.height = this.height
+    try {
+      this.video = await this.setupCamera()
+    } catch (e) {
+      this.video = null
+    }
 
-    this.detectPoseInRealTime()
+    if (this.video !== null) {
+      this.video.play()
+
+      const canvas = this.$refs.output as HTMLCanvasElement
+      this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      canvas.width = this.width
+      canvas.height = this.height
+
+      this.detectPoseInRealTime()
+    }
   }
 
   beforeDestroy() {
     this.poseDetection = false
-    this.video.pause()
-    this.stream.getTracks()[0].stop()
+    if (this.video !== null) {
+      this.video.pause()
+      this.stream.getTracks()[0].stop()
+    }
   }
 
   get isMobile(): boolean {

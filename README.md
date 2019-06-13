@@ -33,6 +33,8 @@
 * `yarn watch` - Watch files, compile any changes in real time (this is your main command)
 * `yarn build` - Compile the project in production mode
 ·
+## 1337
+|  \Add Font Awesome PRO
 ### Checklist
  ·
 [█] do something

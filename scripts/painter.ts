@@ -7,7 +7,7 @@ export default class {
   canvas: HTMLCanvasElement
   engine: BABYLON.Engine
   scene: BABYLON.Scene
-  camera: BABYLON.UniversalCamera
+  camera: BABYLON.TargetCamera
   dots: BABYLON.Mesh[] = []
 
   constructor(canvas: HTMLCanvasElement) {
@@ -18,18 +18,60 @@ export default class {
   initBabylon() {
     this.engine = new BABYLON.Engine(this.canvas, true)
 
+    // window.addEventListener("resize", () => {
+    //   this.engine.resize()
+    // })
+
     this.scene = new BABYLON.Scene(this.engine)
     this.scene.clearColor = new BABYLON.Color4(0.1, 0.4, 0.1)
-    //this.scene.debugLayer.show()
+    //this.scene.grid
 
+    this.addArcRorateCamera()
+
+    this.addLight()
+    //this.addDebugBox()
+  }
+
+  addUniversalCamera() {
     this.camera = new BABYLON.UniversalCamera("camera", BABYLON.Vector3.Zero(), this.scene)
     this.camera.attachControl(this.canvas, true)
     // Camera position and rotation default to my current setup:)
     this.camera.position = new BABYLON.Vector3(200, 200, 500)
     this.camera.rotation = new BABYLON.Vector3(0, 3, 3)
+  }
 
+  addArcRorateCamera() {
+    this.camera = new BABYLON.ArcRotateCamera(
+      "camera",
+      Math.PI / 2,
+      Math.PI / 2,
+      20,
+      new BABYLON.Vector3(0, 0, 0),
+      this.scene
+    )
+    this.camera.attachControl(this.canvas, true)
+  }
+
+  addLight() {
     const light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene)
     light.intensity = 0.7
+  }
+
+  addDebugBox() {
+    const mat = new BABYLON.StandardMaterial("white", this.scene)
+    mat.alpha = 1
+    mat.diffuseColor = BABYLON.Color3.White()
+    const sphere = BABYLON.MeshBuilder.CreateBox("debug box", { size: 1 }, this.scene)
+    sphere.material = mat
+    sphere.position = new BABYLON.Vector3(0, 0, 0)
+  }
+
+  toggleDebugLayer() {
+    if (this.scene.debugLayer.isVisible()) {
+      this.scene.debugLayer.hide()
+    } else {
+      this.scene.debugLayer.show()
+    }
   }
 
   gameLoop() {

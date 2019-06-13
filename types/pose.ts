@@ -2,7 +2,7 @@ import { Vector2D } from "@tensorflow-models/posenet/dist/types"
 import * as BABYLON from "babylonjs"
 
 /**
- * Posenet joint points
+ * Posenet joint points for 3D Avatar
  */
 export interface Keypoints {
   nose?: Vector2D
@@ -25,7 +25,7 @@ export interface Keypoints {
 }
 
 /**
- * Posenet joint points
+ * Posenet joint points for Stickman
  */
 export interface Keymeshes {
   nose?: BABYLON.Mesh
@@ -45,15 +45,4 @@ export interface Keymeshes {
   rightKnee?: BABYLON.Mesh
   leftAnkle?: BABYLON.Mesh
   rightAnkle?: BABYLON.Mesh
-}
-
-/**
- * Calculated avatar joint points
- */
-export interface Joints {
-  head?: BABYLON.Vector3
-  leftShoulder?: BABYLON.Vector3
-  rightShoulder?: BABYLON.Vector3
-  leftElbow?: BABYLON.Vector3
-  rightElbow?: BABYLON.Vector3
 }

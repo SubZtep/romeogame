@@ -8,6 +8,7 @@ import PaintStickman from "~/scripts/paint-stickman"
 import * as BABYLON from "babylonjs"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { Keypoints, Keymeshes } from "~/types/pose"
+import { TPoseStorageName } from "~/scripts/settings"
 
 @Component
 export default class DrawStickmanComponent extends Vue {
@@ -38,6 +39,10 @@ export default class DrawStickmanComponent extends Vue {
     this.painter.gameLoop()
   }
 
+  resizeEngine() {
+    this.painter.engine.resize()
+  }
+
   initJoints() {
     this.joints = {
       nose: this.painter.createJoint(new BABYLON.Color3(1, 0, 0)),
@@ -58,7 +63,7 @@ export default class DrawStickmanComponent extends Vue {
       leftAnkle: this.painter.createJoint(new BABYLON.Color3(0, 0, 0)),
       rightAnkle: this.painter.createJoint(new BABYLON.Color3(0, 0, 0))
     }
-    const tPoseStr: string | null = localStorage.getItem("TPose")
+    const tPoseStr: string | null = localStorage.getItem(TPoseStorageName)
     if (tPoseStr !== null) {
       const tPose: Keypoints = JSON.parse(tPoseStr)
       for (let [key, value] of Object.entries(tPose)) {

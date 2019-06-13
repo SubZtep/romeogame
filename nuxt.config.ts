@@ -24,7 +24,25 @@ const config: NuxtConfiguration = {
 
   plugins: [],
 
-  modules: ["@nuxtjs/pwa"],
+  modules: ["@nuxtjs/pwa", "nuxt-fontawesome"],
+
+  fontawesome: {
+    component: "fa",
+    imports: [
+      {
+        set: "@fortawesome/pro-light-svg-icons",
+        icons: ["faBlind"]
+      },
+      {
+        set: "@fortawesome/pro-regular-svg-icons",
+        icons: ["faWebcam", "faWebcamSlash"]
+      },
+      {
+        set: "@fortawesome/pro-solid-svg-icons",
+        icons: ["faWalking"]
+      }
+    ]
+  },
 
   build: {
     postcss: {

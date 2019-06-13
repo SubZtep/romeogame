@@ -1,5 +1,8 @@
 <template lang="pug">
-canvas(ref="render" :class="$style.canvas")
+div
+  canvas(ref="render" :class="$style.canvas")
+  .mt-1
+    button(@click="painter.toggleDebugLayer()") Toggle Debug Layer
 </template>
 
 <script lang="ts">
@@ -7,23 +10,19 @@ import { Component, Vue, Prop, Getter, Watch } from "nuxt-property-decorator"
 import PaintAvatar from "~/scripts/paint-avatar"
 import Avatar from "~/scripts/avatar"
 import * as BABYLON from "babylonjs"
-import Joints from "~/scripts/joints"
-import Transform from "~/scripts/transform"
 import { Keypoint } from "@tensorflow-models/posenet/dist/types"
-import { DudeBones } from "~/types/bones"
-import { transform } from "@babel/core"
+import { DudeBones as DB } from "~/types/bones"
+import { TPoseStorageName } from "~/scripts/settings"
 
 @Component
 export default class DrawAvatarComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
-  @Prop({ default: true }) running!: boolean
 
   @Getter("getKeypoints", { namespace: "player" }) getKeypoints
 
   loaded = false
   painter: PaintAvatar
-  //transform: Transform
   avatar: Avatar
 
   @Watch("getKeypoints")
@@ -31,15 +30,11 @@ export default class DrawAvatarComponent extends Vue {
     this.avatar.updateKeypoints(keypoints)
   }
 
-  // @Watch("running")
-  // onRunningChange(isRunning) {
-  //   this.avatar.running = isRunning
-  // }
+  resizeEngine() {
+    this.painter.engine.resize()
+  }
 
   mounted() {
-    // const joints = new Joints()
-    // this.transform = new Transform(joints)
-
     this.painter = new PaintAvatar(this.$refs.render as HTMLCanvasElement)
     this.painter.gameLoop()
 
@@ -53,19 +48,23 @@ export default class DrawAvatarComponent extends Vue {
   }
 
   onAvatarImported(meshes, particleSystems, skeletons) {
-    console.log("AVATAR LOADED")
     this.avatar = new Avatar(meshes[0], skeletons[0])
-    //this.avatar.running = this.running
-    this.loaded = true
-
     this.initJoints()
   }
 
   initJoints() {
-    const tPoseStr: string | null = localStorage.getItem("TPose")
+    const tPoseStr: string | null = localStorage.getItem(TPoseStorageName)
     if (tPoseStr !== null) {
-      this.avatar.setKeypoints(JSON.parse(tPoseStr))
+      this.avatar.setJoints(JSON.parse(tPoseStr))
     }
+    // this.avatar.rootJoint
+    //   .child("crest")
+    //   .child("waist")
+    //   .child("upperBody1")
+    //   .child("upperBody2")
+    //   .child("upperBody3")
+    //   .child("upperBody4")
+    //   .child("head").position = BABYLON.Vector3.Zero()
   }
 }
 </script>
@@ -73,6 +72,7 @@ export default class DrawAvatarComponent extends Vue {
 <style module>
 .canvas {
   width: 100%;
-  height: 100%;
+  /*height: 100%;*/
+  height: var(--desktop-app-height);
 }
 </style>

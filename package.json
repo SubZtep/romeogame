@@ -14,12 +14,16 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/pro-light-svg-icons": "^5.9.0",
+    "@fortawesome/pro-regular-svg-icons": "^5.9.0",
+    "@fortawesome/pro-solid-svg-icons": "^5.9.0",
     "@nuxtjs/pwa": "^2.6.0",
     "@tensorflow-models/posenet": "^2.0.0",
     "@tensorflow/tfjs": "^1.1.2",
     "babylonjs": "^4.0.3",
     "cross-env": "^5.2.0",
     "nuxt": "^2.8.1",
+    "nuxt-fontawesome": "^0.4.0",
     "ts-node": "^8.2.0"
   },
   "devDependencies": {

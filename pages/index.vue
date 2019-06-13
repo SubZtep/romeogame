@@ -1,43 +1,63 @@
 <template lang="pug">
-.container
-  div(:class="$style.mainGrid")
+.container.max-w-full
+  div(:class="{ [$style.mainGrid]: true, [$style.webcam]: panel.webcam }")
 
-    //- Webcam view
-    .bg-orange-900.p-2
-      button(@click="showWebcam = !showWebcam") Toggle Webcam
+    //- Nav panel
+    nav.bg-yellow-600.px-2.py-1.border-l-2.border-r-2.border-gray-800.border-dotted
+      button(
+        title="Toggle Webcam Panel"
+        @click="toggleWebcamPanel()")
+        fa(:icon="['far', panel.webcam ? 'webcam-slash' : 'webcam']")
+      button(
+        title="Stickman/Avatar Switch"
+        @click="panel.stickman = !panel.stickman; panel.avatar = !panel.stickman")
+        fa(v-if="panel.avatar" :icon="['fal', 'blind']")
+        fa(v-if="panel.stickman" :icon="['fas', 'walking']")
+
+    //- Webcam panel
+    .bg-orange-900.p-2.border-l-2.border-r-2.border-gray-800.border-dotted(v-if="panel.webcam")
       WebcamStream(
-        v-if="showWebcam"
         :width="352"
         :height="288"
         :adjacents="false")
-      RecordTPose.mt-3(v-if="showWebcam")
 
-    //- Game view
-    .bg-red-900.p-2
-      //-DrawStickman(:running="showWebcam")
-      DrawAvatar(:running="showWebcam")
-
-    //- Debug console
-    //-.bg-green-900.text-xs.text-yellow-500.p-2
-      pre {{ debugKeypoints() }}
+    //- Game panel
+    .bg-red-900.p-2.border-l-2.border-r-2.border-gray-800.border-dotted
+      DrawStickman(
+        v-if="panel.stickman"
+        ref="stickmanPanel")
+      DrawAvatar(
+        v-if="panel.avatar"
+        ref="avatarPanel")
 </template>
 
 <script lang="ts">
-import { Component, Vue, Getter } from "nuxt-property-decorator"
+import { Component, Vue } from "nuxt-property-decorator"
 import WebcamStream from "~/components/WebcamStream.vue"
 import DrawStickman from "~/components/DrawStickman.vue"
 import DrawAvatar from "~/components/DrawAvatar.vue"
-import RecordTPose from "~/components/RecordTPose.vue"
+import DrawAvatarComponent from "~/components/DrawAvatar.vue"
+import DrawStickmanComponent from "~/components/DrawStickman.vue"
 
-@Component({ components: { WebcamStream, DrawStickman, DrawAvatar, RecordTPose } })
+@Component({ components: { WebcamStream, DrawStickman, DrawAvatar } })
 export default class IndexPage extends Vue {
-  showWebcam = false
-  @Getter("getKeypoints", { namespace: "player" }) keypoints
+  // Visible panels
+  panel = {
+    webcam: false,
+    stickman: false,
+    avatar: true
+  }
 
-  debugKeypoints() {
-    return this.keypoints.filter(keypoint =>
-      ["nose", "leftElbow", "rightElbow"].includes(keypoint.part as string)
-    )
+  toggleWebcamPanel() {
+    this.panel.webcam = !this.panel.webcam
+    this.$nextTick(() => {
+      if (this.panel.stickman) {
+        ;(this.$refs.stickmanPanel as DrawStickmanComponent).painter.engine.resize()
+      }
+      if (this.panel.avatar) {
+        ;(this.$refs.avatarPanel as DrawAvatarComponent).painter.engine.resize()
+      }
+    })
   }
 }
 </script>
@@ -45,9 +65,11 @@ export default class IndexPage extends Vue {
 <style module>
 .mainGrid {
   display: grid;
-  /*grid-template-columns: 352px 1fr 300px;
-  min-height: 500px;*/
-  grid-template-columns: 352px 1fr;
-  height: 500px;
+  height: var(--desktop-app-height);
+  gap: 0.6rem;
+  grid-template-columns: 80px 1fr;
+}
+.mainGrid.webcam {
+  grid-template-columns: 80px 352px 1fr;
 }
 </style>

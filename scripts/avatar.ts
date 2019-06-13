@@ -1,20 +1,24 @@
 import * as BABYLON from "babylonjs"
-import { DudeBones, PosenetBones, RomeoBones } from "~/types/bones"
+import { DudeBones as DB, PosenetBones } from "~/types/bones"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { minPartConfidence } from "~/scripts/settings"
 import { Keypoints } from "../types/pose"
+import { IJoint } from "~/types/joint"
+import { Joint } from "./joint"
+import { join } from "path"
 
 export default class Avatar {
   mesh: BABYLON.AbstractMesh
   skeleton: BABYLON.Skeleton
+  rootJoint: IJoint
 
   constructor(mesh: BABYLON.AbstractMesh, skeleton: BABYLON.Skeleton) {
     this.mesh = mesh
     this.skeleton = skeleton
 
-    //this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
-    this.mesh.position = new BABYLON.Vector3(300, 200, 300)
-    this.mesh.rotation = new BABYLON.Vector3(0, 0, Math.PI)
+    this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
+    //this.mesh.position = new BABYLON.Vector3(300, 200, 300)
+    //this.mesh.rotation = new BABYLON.Vector3(0, 0, Math.PI)
   }
 
   v2dDiff(p1: Vector2D, p2: Vector2D): Vector2D {
@@ -31,48 +35,159 @@ export default class Avatar {
     }
   }
 
-  setKeypoints(kp: Keypoints): void {
-    const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
-    const bns = this.skeleton.bones
+  v2dDistance(p1: Vector2D, p2: Vector2D): number {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
+  }
 
-    bns[DudeBones.root].setPosition(new BABYLON.Vector3(waist.x, waist.y, -200))
-    bns[DudeBones._crest].setPosition(new BABYLON.Vector3(-0.96, 0, 0))
-    bns[DudeBones.__waist].setPosition(new BABYLON.Vector3(3.79, 0, 0))
-    bns[DudeBones.___upperBody].setPosition(new BABYLON.Vector3(4.54, 0, 0))
-    bns[DudeBones.____upperBody].setPosition(new BABYLON.Vector3(4.54, 0, 0))
-    bns[DudeBones._____upperBody].setPosition(new BABYLON.Vector3(4.54, 0, 0))
-    bns[DudeBones.______upperBody].setPosition(new BABYLON.Vector3(5.54, 0, 0))
-    bns[DudeBones._______head].setPosition(new BABYLON.Vector3(3.95, 0, 0))
-    bns[DudeBones.________rightEye].setPosition(new BABYLON.Vector3(4.48, 3.25, 1.27))
-    bns[DudeBones.________leftEye].setPosition(new BABYLON.Vector3(4.58, 3.11, -1.21))
-    bns[DudeBones.________rightEyebrow].setPosition(new BABYLON.Vector3(4.22, 1.41, 1.39))
-    bns[DudeBones.________leftEyebrow].setPosition(new BABYLON.Vector3(4.3, 1.33, -1.07))
-    bns[DudeBones._______rightArm].setPosition(new BABYLON.Vector3(-0.31, -0.77, 1.22))
-    bns[DudeBones.________rightShoulder].setPosition(new BABYLON.Vector3(6.84, 0, 0))
-    bns[DudeBones._________rightElbow].setPosition(new BABYLON.Vector3(13.14, 0, 0))
-    bns[DudeBones.__________rightWrist].setPosition(new BABYLON.Vector3(10.83, 0, 0))
-    bns[DudeBones.___________rightFinger1].setPosition(new BABYLON.Vector3(1.63, 0.63, -1.68))
-    bns[DudeBones.___________rightFinger2].setPosition(new BABYLON.Vector3(4.349, 0.016, -1.561))
-    bns[DudeBones.___________rightFinger3].setPosition(new BABYLON.Vector3(4.36, 0, -0.367))
-    bns[DudeBones.___________rightFinger4].setPosition(new BABYLON.Vector3(4.295, -0.095, 0.806))
-    bns[DudeBones.___________rightFinger5].setPosition(new BABYLON.Vector3(3.973, 0.223, 1.743))
-    bns[DudeBones._______leftArm].setPosition(new BABYLON.Vector3(-0.308, -0.771, -1.223))
-    bns[DudeBones.________leftShoulder].setPosition(new BABYLON.Vector3(6.844, 0, 0))
-    bns[DudeBones._________leftElbow].setPosition(new BABYLON.Vector3(13.142, 0, 0))
-    bns[DudeBones.__________leftWrist].setPosition(new BABYLON.Vector3(10.826, 0, 0))
-    bns[DudeBones.___________leftFinger1].setPosition(new BABYLON.Vector3(1.625, 0.627, 1.679))
-    bns[DudeBones.___________leftFinger2].setPosition(new BABYLON.Vector3(4.349, 0.016, 1.561))
-    bns[DudeBones.___________leftFinger3].setPosition(new BABYLON.Vector3(4.36, 0, 0.367))
-    bns[DudeBones.___________leftFinger4].setPosition(new BABYLON.Vector3(4.295, -0.095, -0.806))
-    bns[DudeBones.___________leftFinger5].setPosition(new BABYLON.Vector3(3.973, 0.223, -1.743))
-    bns[DudeBones.___rightHip].setPosition(new BABYLON.Vector3(-3.769, -0.355, 3.495))
-    bns[DudeBones.____rightKnee].setPosition(new BABYLON.Vector3(18.257, 0, 0))
-    bns[DudeBones._____rightAnkle].setPosition(new BABYLON.Vector3(15.428, 0, 0))
-    bns[DudeBones.______rightFoot].setPosition(new BABYLON.Vector3(5.25, 6.274, 0))
-    bns[DudeBones.___leftHip].setPosition(new BABYLON.Vector3(-3.769, -0.355, -3.495))
-    bns[DudeBones.____leftKnee].setPosition(new BABYLON.Vector3(18.257, 0, 0))
-    bns[DudeBones._____leftAnkle].setPosition(new BABYLON.Vector3(15.428, 0, 0))
-    bns[DudeBones.______leftFoot].setPosition(new BABYLON.Vector3(5.25, 6.274, 0))
+  /**
+   * Create new Dude joint
+   * @param name Joint name for identify position
+   * @param modifier Position modifier
+   */
+  private getNamedJoint(name: string, modifier: Vector2D | null = null): Joint {
+    const jointPoses = {
+      crest: new BABYLON.Vector3(-0.96, 0, 0),
+      waist: new BABYLON.Vector3(3.79, 0, 0),
+      upperBody1: new BABYLON.Vector3(4.54, 0, 0),
+      upperBody2: new BABYLON.Vector3(4.54, 0, 0),
+      upperBody3: new BABYLON.Vector3(4.54, 0, 0),
+      upperBody4: new BABYLON.Vector3(5.54, 0, 0),
+      head: new BABYLON.Vector3(3.95, 0, 0),
+      rightEye: new BABYLON.Vector3(4.48, 3.25, 1.27),
+      leftEye: new BABYLON.Vector3(4.58, 3.11, -1.21),
+      rightEyebrow: new BABYLON.Vector3(4.22, 1.41, 1.39),
+      leftEyebrow: new BABYLON.Vector3(4.3, 1.33, -1.07),
+      rightArm: new BABYLON.Vector3(-0.31, -0.77, 1.22),
+      rightShoulder: new BABYLON.Vector3(6.84, 0, 0),
+      rightElbow: new BABYLON.Vector3(13.14, 0, 0),
+      rightWrist: new BABYLON.Vector3(10.83, 0, 0),
+      rightFinger1: new BABYLON.Vector3(1.63, 0.63, -1.68),
+      rightFinger2: new BABYLON.Vector3(4.349, 0.016, -1.561),
+      rightFinger3: new BABYLON.Vector3(4.36, 0, -0.367),
+      rightFinger4: new BABYLON.Vector3(4.295, -0.095, 0.806),
+      rightFinger5: new BABYLON.Vector3(3.973, 0.223, 1.743),
+      leftArm: new BABYLON.Vector3(-0.308, -0.771, -1.223),
+      leftShoulder: new BABYLON.Vector3(6.844, 0, 0),
+      leftElbow: new BABYLON.Vector3(13.142, 0, 0),
+      leftWrist: new BABYLON.Vector3(10.826, 0, 0),
+      leftFinger1: new BABYLON.Vector3(1.625, 0.627, 1.679),
+      leftFinger2: new BABYLON.Vector3(4.349, 0.016, 1.561),
+      leftFinger3: new BABYLON.Vector3(4.36, 0, 0.367),
+      leftFinger4: new BABYLON.Vector3(4.295, -0.095, -0.806),
+      leftFinger5: new BABYLON.Vector3(3.973, 0.223, -1.743),
+      rightHip: new BABYLON.Vector3(-3.769, -0.355, 3.495),
+      rightKnee: new BABYLON.Vector3(18.257, 0, 0),
+      rightAnkle: new BABYLON.Vector3(15.428, 0, 0),
+      rightFoot: new BABYLON.Vector3(5.25, 6.274, 0),
+      leftHip: new BABYLON.Vector3(-3.769, -0.355, -3.495),
+      leftKnee: new BABYLON.Vector3(18.257, 0, 0),
+      leftAnkle: new BABYLON.Vector3(15.428, 0, 0),
+      leftFoot: new BABYLON.Vector3(5.25, 6.274, 0)
+    }
+    if (jointPoses[name] === undefined) {
+      throw new Error(`Unkown joint ${name}`)
+    }
+    return new Joint(name, this.skeleton.bones[DB[name]], jointPoses[name])
+  }
+
+  /**
+   * Create multiple Dude joint (no modifiers with this shortcut)
+   * @param names Joint names
+   */
+  private getNamedJoints(names: string[]): Joint[] {
+    return names.map(name => this.getNamedJoint(name))
+  }
+
+  /**
+   * Create all avatar joints
+   * @param kp User movement keypoints, the modifiers
+   */
+  setJoints(kp: Keypoints = {}): void {
+    //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
+
+    // Init default Dude positions
+    this.rootJoint = new Joint("root", this.skeleton.bones[DB.root], BABYLON.Vector3.Zero())
+    this.rootJoint
+      .addChild(this.getNamedJoint("crest"))
+      .addChild(this.getNamedJoint("waist"))
+      .addChildren(this.getNamedJoints(["upperBody1", "rightHip", "leftHip"]))
+      .forEach(joint => {
+        switch (joint.name) {
+          case "upperBody1":
+            joint
+              .addChild(this.getNamedJoint("upperBody2"))
+              .addChild(this.getNamedJoint("upperBody3"))
+              .addChild(this.getNamedJoint("upperBody4"))
+              .addChildren(this.getNamedJoints(["head", "rightArm", "leftArm"]))
+              .forEach(joint => {
+                switch (joint.name) {
+                  case "head":
+                    joint.addChildren(
+                      this.getNamedJoints(["rightEye", "leftEye", "rightEyebrow", "leftEyebrow"])
+                    )
+                    break
+                  case "rightArm":
+                    joint
+                      .addChild(this.getNamedJoint("rightShoulder"))
+                      .addChild(this.getNamedJoint("rightElbow"))
+                      .addChild(this.getNamedJoint("rightWrist"))
+                      .addChildren(
+                        this.getNamedJoints([
+                          "rightFinger1",
+                          "rightFinger2",
+                          "rightFinger3",
+                          "rightFinger4",
+                          "rightFinger5"
+                        ])
+                      )
+                    break
+                  case "leftArm":
+                    joint
+                      .addChild(this.getNamedJoint("leftShoulder"))
+                      .addChild(this.getNamedJoint("leftElbow"))
+                      .addChild(this.getNamedJoint("leftWrist"))
+                      .addChildren(
+                        this.getNamedJoints([
+                          "leftFinger1",
+                          "leftFinger2",
+                          "leftFinger3",
+                          "leftFinger4",
+                          "leftFinger5"
+                        ])
+                      )
+                    break
+                }
+              })
+            break
+          case "rightHip":
+            joint
+              .addChild(this.getNamedJoint("rightKnee"))
+              .addChild(this.getNamedJoint("rightAnkle"))
+              .addChild(this.getNamedJoint("rightFoot"))
+            break
+          case "leftHip":
+            joint
+              .addChild(this.getNamedJoint("leftKnee"))
+              .addChild(this.getNamedJoint("leftAnkle"))
+              .addChild(this.getNamedJoint("leftFoot"))
+            break
+        }
+      })
+
+    //this.jointWalker(this.rootJoint, 0)
+    //TODO: walk on the tree and calculate kp values (1: map joints, 2: centre position, 3: scale)
+    //console.log("KP", kp)
+  }
+
+  jointWalker(joint: IJoint, level: number) {
+    console.log("-".repeat(level) + joint.name)
+    //if (joint.hasChild()) {
+    joint.children.forEach(child => {
+      this.jointWalker(child, level + 1)
+    })
+    // } else {
+    //   console.log("No Children")
+    // }
   }
 
   updateKeypoints(keypoints: Keypoint[]): void {

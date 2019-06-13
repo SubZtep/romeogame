@@ -7,9 +7,14 @@ div
 <script lang="ts">
 import { Component, Vue, Getter } from "nuxt-property-decorator"
 import { Keypoint } from "@tensorflow-models/posenet/dist/types"
-import { recCountdownStart, minPartConfidence, minPoseConfidence } from "~/scripts/settings"
 import { setTimeout } from "timers"
 import { Keypoints } from "../types/pose"
+import {
+  recCountdownStart,
+  minPartConfidence,
+  minPoseConfidence,
+  TPoseStorageName
+} from "~/scripts/settings"
 
 @Component
 export default class RecordTPoseComponent extends Vue {
@@ -42,7 +47,7 @@ export default class RecordTPoseComponent extends Vue {
       }
     })
     if (valid) {
-      localStorage.setItem("TPose", JSON.stringify(pose))
+      localStorage.setItem(TPoseStorageName, JSON.stringify(pose))
     } else {
       this.startCountdown()
     }
