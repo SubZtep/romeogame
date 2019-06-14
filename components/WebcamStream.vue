@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-  div(v-if="!loading && video !== null")
+  div(v-show="!loading && video !== null")
     button(v-if="poseDetection" @click="poseDetection = false") STOP POSE DETECTION
     button(v-else @click="detectPoseInRealTime") START POSE DETECTION
 
@@ -62,6 +62,7 @@ export default class WebcamStreamComponent extends Vue {
     try {
       this.video = await this.setupCamera()
     } catch (e) {
+      console.log("Error setup camera", e)
       this.video = null
     }
 
@@ -97,6 +98,7 @@ export default class WebcamStreamComponent extends Vue {
     }
 
     const video: HTMLVideoElement = this.$refs.video as HTMLVideoElement
+    console.log("VIDEO", this.$refs)
     video.width = this.width
     video.height = this.height
 

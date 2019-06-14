@@ -18,7 +18,7 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["./types/stores.d.ts", "@types/node", "@nuxt/vue-app", "@types/jest"]
+    "types": ["@types/node", "@nuxt/vue-app", "@types/jest"]
   },
   "exclude": ["node_modules"]
 }

@@ -36,26 +36,24 @@ import { Component, Vue } from "nuxt-property-decorator"
 import WebcamStream from "~/components/WebcamStream.vue"
 import DrawStickman from "~/components/DrawStickman.vue"
 import DrawAvatar from "~/components/DrawAvatar.vue"
-import DrawAvatarComponent from "~/components/DrawAvatar.vue"
-import DrawStickmanComponent from "~/components/DrawStickman.vue"
 
 @Component({ components: { WebcamStream, DrawStickman, DrawAvatar } })
 export default class IndexPage extends Vue {
   // Visible panels
   panel = {
-    webcam: false,
-    stickman: false,
-    avatar: true
+    webcam: true,
+    stickman: true,
+    avatar: false
   }
 
   toggleWebcamPanel() {
     this.panel.webcam = !this.panel.webcam
     this.$nextTick(() => {
       if (this.panel.stickman) {
-        ;(this.$refs.stickmanPanel as DrawStickmanComponent).painter.engine.resize()
+        ;(this.$refs.stickmanPanel as DrawStickman).painter.engine.resize()
       }
       if (this.panel.avatar) {
-        ;(this.$refs.avatarPanel as DrawAvatarComponent).painter.engine.resize()
+        ;(this.$refs.avatarPanel as DrawAvatar).painter.engine.resize()
       }
     })
   }
