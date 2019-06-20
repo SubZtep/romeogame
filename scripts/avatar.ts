@@ -11,12 +11,22 @@ export default class Avatar extends Formation {
   dudeJointNames: string[] = []
   //stickman: Stickman | null = null
 
+  /**
+   * Dude character
+   */
   constructor(mesh: BABYLON.AbstractMesh, skeleton: BABYLON.Skeleton) {
     super()
     this.mesh = mesh
     this.skeleton = skeleton
-    this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
     this.dudeJointNames = getDudeJointNames()
+  }
+
+  /**
+   * Scale character
+   * @param amount Scale size
+   */
+  scale(amount = 0.1) {
+    this.mesh.scaling = new BABYLON.Vector3(amount, amount, amount)
   }
 
   /**
@@ -79,9 +89,7 @@ export default class Avatar extends Formation {
     return names.map(name => this.getNamedJoint(name))
   }
 
-  /**
-   * Create all avatar joints from hardcoded values
-   */
+  /** Create all avatar joints from hardcoded values */
   setJoints(): void {
     //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
 

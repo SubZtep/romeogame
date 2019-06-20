@@ -1,3 +1,8 @@
+export enum BoneJoint {
+  root,
+  crest
+}
+
 /**
  * Dude model bone mapping
  */
