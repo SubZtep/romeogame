@@ -1,60 +1,68 @@
 <template lang="pug">
 div
-  div(v-show="!loading && video !== null")
-    button(v-if="poseDetection" @click="poseDetection = false") STOP POSE DETECTION
-    button(v-else @click="detectPoseInRealTime") START POSE DETECTION
+  .relative(
+    v-show="!loading && video !== null"
+    :class="$style.cb"
+    :style="`width: ${width}px; height: ${height}px`")
 
-    .relative(
-      :class="$style.cb"
+    video.absolute.border-dashed.border-4.border-red-600(
+      ref="video"
+      :class="{ [$style.video]: !haluCam }"
+      playsinline
       :style="`width: ${width}px; height: ${height}px`")
 
-      video.absolute.border-dashed.border-4.border-red-600(
-        ref="video"
-        :class="{ [$style.video]: !haluCam }"
-        playsinline
-        :style="`width: ${width}px; height: ${height}px`")
-
-      canvas.absolute.border-dotted.border-4.border-red-800(
-        ref="output"
-        :class="{ [$style.cb]: true, 'opacity-50': haluCam }"
-        :style="`width: ${width}px; height: ${height}px`")
-
-      RecordTPose.mt-3
+    canvas.absolute.border-dotted.border-4.border-red-800(
+      ref="output"
+      v-show="poseDetection"
+      :class="{ [$style.cb]: true, 'opacity-50': haluCam }"
+      :style="`width: ${width}px; height: ${height}px`")
 
   .text-red-600.text-4xl.font-bold(v-if="!loading && video === null")
     | Webcam is in the hole with spiders!?
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Action } from "nuxt-property-decorator"
+import { Component, Vue, Prop, Action, Watch } from "nuxt-property-decorator"
 import Poses from "~/scripts/poses"
-import { Pose } from "@tensorflow-models/posenet/dist/types"
+import { Pose, Keypoint } from "@tensorflow-models/posenet/dist/types"
 import { getAdjacentKeyPoints } from "@tensorflow-models/posenet/dist/util"
 import { minPoseConfidence, minPartConfidence, haluCam } from "~/scripts/settings"
-import RecordTPose from "~/components/RecordTPose.vue"
+import * as BABYLON from "babylonjs"
 
 declare let navigator: any
 
 /**
  * Webcam input, populate Vuex player store
  */
-@Component({ components: { RecordTPose } })
+@Component
 export default class WebcamStreamComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
+  @Prop({ default: false }) poseDetection!: boolean
   @Prop({ default: false }) adjacents!: boolean
 
   loading = true
   haluCam: boolean = haluCam
-  poseDetection = false
 
   ctx!: CanvasRenderingContext2D
   video!: HTMLVideoElement | null
   stream!: MediaStream
   poses!: Poses
 
+  @Action("resetPosenetJoints", { namespace: "player" }) resetPosenetJoints: Function
+  @Action("setPosenetJoint", { namespace: "player" }) setPosenetJoint: Function
+  @Action("resetPosenetBones", { namespace: "player" }) resetPosenetBones: Function
+  @Action("setPosenetBone", { namespace: "player" }) setPosenetBone: Function
+
   @Action("setKeypoints", { namespace: "player" }) setKeypoints: Function
   @Action("setAdjacents", { namespace: "player" }) setAdjacents: Function
+
+  @Watch("poseDetection", { immediate: true })
+  onPoseDetectionChanged(val: boolean) {
+    if (val) {
+      this.detectPoseInRealTime()
+    }
+  }
 
   async mounted() {
     // Load video
@@ -73,23 +81,16 @@ export default class WebcamStreamComponent extends Vue {
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
       canvas.width = this.width
       canvas.height = this.height
-
-      this.detectPoseInRealTime()
     }
 
     this.loading = false
   }
 
   beforeDestroy() {
-    this.poseDetection = false
     if (this.video !== null) {
       this.video.pause()
       this.stream.getTracks()[0].stop()
     }
-  }
-
-  get isMobile(): boolean {
-    return /Android/i.test(navigator.userAgent) || /iPhone|iPad|iPod/i.test(navigator.userAgent)
   }
 
   async setupCamera(): Promise<HTMLVideoElement> {
@@ -98,7 +99,6 @@ export default class WebcamStreamComponent extends Vue {
     }
 
     const video: HTMLVideoElement = this.$refs.video as HTMLVideoElement
-    console.log("VIDEO", this.$refs)
     video.width = this.width
     video.height = this.height
 
@@ -108,21 +108,10 @@ export default class WebcamStreamComponent extends Vue {
         facingMode: "user",
         width: this.width,
         height: this.height
-        // width: this.isMobile ? undefined : this.width,
-        // height: this.isMobile ? undefined : this.height
       }
     })
 
-    // Webcam settings
-    // https://developer.mozilla.org/en-US/docs/Web/API/Media_Streams_API/Constraints
-    // console.log("Supported Constraints", navigator.mediaDevices.getSupportedConstraints())
-    // await stream.getVideoTracks()[0].applyConstraints({
-    //   frameRate: { exact: 30 }
-    // })
-
     video.srcObject = this.stream
-
-    //console.log("STREAM", stream.getVideoTracks()[0].getSettings())
 
     return new Promise(resolve => {
       video.onloadedmetadata = () => {
@@ -132,24 +121,46 @@ export default class WebcamStreamComponent extends Vue {
   }
 
   async detectPoseInRealTime() {
-    this.poses = new Poses(this.video, this.ctx, this.isMobile)
+    this.poses = new Poses(this.video, this.ctx, false)
     await this.poses.init()
-
-    this.poseDetection = true
     await this.posesLoop()
   }
 
   async posesLoop() {
-    // Get keypointsd and draw on camera view
+    // Get keypoints and draw on camera view
     const pose: Pose = await this.poses.poseDetectionFrame(minPoseConfidence, minPartConfidence)
+    this.resetPosenetJoints()
+    this.resetPosenetBones()
+
     if (pose.score >= minPoseConfidence) {
-      this.setKeypoints(pose.keypoints)
+      // Set keypoints
+      pose.keypoints.forEach((keypoint: Keypoint) => {
+        if (keypoint.score >= minPartConfidence) {
+          this.setPosenetJoint({
+            jointName: keypoint.part,
+            position: new BABYLON.Vector3(keypoint.position.x, keypoint.position.y)
+          })
+        }
+      })
+
+      // Set skeleton
       if (this.adjacents) {
-        this.setAdjacents(getAdjacentKeyPoints(pose.keypoints, minPartConfidence))
+        const keypoints: Keypoint[][] = getAdjacentKeyPoints(pose.keypoints, minPartConfidence)
+        keypoints.forEach((keypoints: Keypoint[]) => {
+          if (keypoints[0].score >= minPartConfidence && keypoints[1].score >= minPartConfidence) {
+            this.setPosenetBone({
+              jointNames: `${keypoints[0].part}-${keypoints[1].part}`,
+              positions: [
+                new BABYLON.Vector3(keypoints[0].position.x, keypoints[0].position.y),
+                new BABYLON.Vector3(keypoints[1].position.x, keypoints[1].position.y)
+              ]
+            })
+          }
+        })
       }
     }
 
-    if (this.poseDetection) {
+    if (this.poseDetection && this.video && !this.video.paused) {
       window.requestAnimationFrame(this.posesLoop)
     }
   }

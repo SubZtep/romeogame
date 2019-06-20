@@ -63,3 +63,9 @@ _TBA_¡
 ### License
 MIT
 ```
+
+#### /\*
+
+#### HK pic size: 99cm x 68cm
+
+#### \*/

@@ -5,20 +5,16 @@ div
 </template>
 
 <script lang="ts">
-import { Component, Vue, Getter } from "nuxt-property-decorator"
-import { Keypoint } from "@tensorflow-models/posenet/dist/types"
 import { setTimeout } from "timers"
-import { Keypoints } from "../types/pose"
-import {
-  recCountdownStart,
-  minPartConfidence,
-  minPoseConfidence,
-  TPoseStorageName
-} from "~/scripts/settings"
+import { Component, Vue, Getter } from "nuxt-property-decorator"
+import * as BABYLON from "babylonjs"
+import { getPosenetJointNames, map2string } from "~/scripts/utils"
+import { recCountdownStart, TPoseStorageName } from "~/scripts/settings"
 
 @Component
 export default class RecordTPoseComponent extends Vue {
-  @Getter("getKeypoints", { namespace: "player" }) keypoints: Keypoint[]
+  @Getter("getPosenetJoints", { namespace: "player" }) posenetJoints: Map<string, BABYLON.Vector3>
+
   countdown: number = 0
 
   startCountdown() {
@@ -37,17 +33,13 @@ export default class RecordTPoseComponent extends Vue {
   }
 
   recordPose() {
-    const pose: Keypoints = {}
-    let valid = true
-    this.keypoints.forEach(keypoint => {
-      if (keypoint.score >= minPoseConfidence) {
-        pose[keypoint.part] = keypoint.position
-      } else {
-        valid = false
-      }
-    })
+    const valid: boolean = true //getPosenetJointNames().length === this.posenetJoints.size
     if (valid) {
-      localStorage.setItem(TPoseStorageName, JSON.stringify(pose))
+      const joints = new Map<string, BABYLON.Vector3>()
+      this.posenetJoints.forEach((position, jointName) => {
+        joints.set(jointName, position)
+      })
+      localStorage.setItem(TPoseStorageName, map2string(joints))
     } else {
       this.startCountdown()
     }

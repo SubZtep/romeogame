@@ -15,11 +15,7 @@
         fa(v-if="panel.stickman" :icon="['fas', 'walking']")
 
     //- Webcam panel
-    .bg-orange-900.p-2.border-l-2.border-r-2.border-gray-800.border-dotted(v-if="panel.webcam")
-      WebcamStream(
-        :width="352"
-        :height="288"
-        :adjacents="false")
+    WebcamPanel(v-if="panel.webcam")
 
     //- Game panel
     .bg-red-900.p-2.border-l-2.border-r-2.border-gray-800.border-dotted
@@ -33,18 +29,20 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator"
-import WebcamStream from "~/components/WebcamStream.vue"
+import WebcamPanel from "~/components/webcam/WebcamPanel.vue"
 import DrawStickman from "~/components/DrawStickman.vue"
 import DrawAvatar from "~/components/DrawAvatar.vue"
 
-@Component({ components: { WebcamStream, DrawStickman, DrawAvatar } })
+@Component({ components: { WebcamPanel, DrawStickman, DrawAvatar } })
 export default class IndexPage extends Vue {
   // Visible panels
   panel = {
-    webcam: true,
-    stickman: true,
-    avatar: false
+    webcam: false,
+    stickman: false,
+    avatar: true
   }
+
+  poseDetection: false
 
   toggleWebcamPanel() {
     this.panel.webcam = !this.panel.webcam
@@ -68,6 +66,6 @@ export default class IndexPage extends Vue {
   grid-template-columns: 80px 1fr;
 }
 .mainGrid.webcam {
-  grid-template-columns: 80px 352px 1fr;
+  grid-template-columns: 80px 382px 1fr;
 }
 </style>

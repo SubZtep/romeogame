@@ -17,15 +17,16 @@ export default class {
   initBabylon() {
     this.engine = new BABYLON.Engine(this.canvas, true)
 
-    // window.addEventListener("resize", () => {
-    //   this.engine.resize()
-    // })
+    window.addEventListener("resize", () => {
+      this.engine.resize()
+    })
 
     this.scene = new BABYLON.Scene(this.engine)
     this.scene.clearColor = new BABYLON.Color4(0.1, 0.4, 0.1)
-    //this.scene.grid
 
-    this.addArcRorateCamera()
+    //this.addArcRorateCamera()
+    //this.addUniversalCamera()
+    //this.addFlyCamera()
 
     this.addLight()
     //this.addDebugBox()
@@ -35,8 +36,8 @@ export default class {
     this.camera = new BABYLON.UniversalCamera("camera", BABYLON.Vector3.Zero(), this.scene)
     this.camera.attachControl(this.canvas, true)
     // Camera position and rotation default to my current setup:)
-    this.camera.position = new BABYLON.Vector3(200, 200, 500)
-    this.camera.rotation = new BABYLON.Vector3(0, 3, 3)
+    //this.camera.position = new BABYLON.Vector3(200, 200, 500)
+    //this.camera.rotation = new BABYLON.Vector3(0, 3, 3)
   }
 
   addArcRorateCamera() {
@@ -49,6 +50,12 @@ export default class {
       this.scene
     )
     this.camera.attachControl(this.canvas, true)
+  }
+
+  addFlyCamera() {
+    this.camera = new BABYLON.FlyCamera("camera", BABYLON.Vector3.Zero(), this.scene)
+    //this.painter.camera.rotation = new BABYLON.Vector3(0, 0, Math.PI)
+    //this.camera.attachControl(this.canvas, true)
   }
 
   addLight() {
@@ -77,6 +84,18 @@ export default class {
     this.engine.runRenderLoop(() => {
       this.scene.render()
     })
+  }
+
+  stopBabylon() {
+    window.removeEventListener("resize", () => {
+      this.engine.resize()
+    })
+    // if (this.scene.debugLayer.isVisible()) {
+    //   this.scene.debugLayer.hide()
+    // }
+    this.engine.stopRenderLoop()
+    this.scene.dispose()
+    this.engine.dispose()
   }
 
   /**

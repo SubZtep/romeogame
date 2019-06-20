@@ -1,7 +1,7 @@
 import { PlayerState } from "~/types/stores"
-import { Keypoint } from "@tensorflow-models/posenet/dist/types"
+import * as BABYLON from "babylonjs"
 
 export default {
-  getKeypoints: (state: PlayerState): Keypoint[] => state.keypoints,
-  getAdjacents: (state: PlayerState): Keypoint[][] => state.adjacents
+  getPosenetJoints: (state: PlayerState): Map<string, BABYLON.Vector3> => state.posenetJoints,
+  getPosenetBones: (state: PlayerState): Map<string, BABYLON.Vector3[]> => state.posenetBones
 }

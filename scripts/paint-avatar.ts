@@ -1,6 +1,6 @@
-import Painter from "./painter"
 import * as BABYLON from "babylonjs"
 import { Keypoint } from "@tensorflow-models/posenet/dist/types"
+import Painter from "./painter"
 
 export default class PaintAvatar extends Painter {
   /**

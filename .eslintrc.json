@@ -13,6 +13,7 @@
   "rules": {
     "no-unused-vars": "off",
     "no-console": "off",
-    "spaced-comment": "off"
+    "spaced-comment": "off",
+    "no-useless-return": "off"
   }
 }

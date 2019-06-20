@@ -1,10 +1,25 @@
-import { Keypoint } from "@tensorflow-models/posenet/dist/types"
+import * as BABYLON from "babylonjs"
 
 export default {
-  setKeypoints({ commit }, keypoints: Keypoint[]) {
-    commit("SET_KEYPOINTS", keypoints)
+  resetPosenetJoints({ commit }) {
+    commit("RESET_POSENET_JOINTS")
   },
-  setAdjacents({ commit }, adjacents: Keypoint[][]) {
-    commit("SET_ADJACENTS", adjacents)
+
+  setPosenetJoint(
+    { commit },
+    { jointName, position }: { jointName: String; position: BABYLON.Vector3 }
+  ) {
+    commit("SET_POSENET_JOINT", { jointName, position })
+  },
+
+  resetPosenetBones({ commit }) {
+    commit("RESET_POSENET_BONES")
+  },
+
+  setPosenetBone(
+    { commit },
+    { jointNames, positions }: { jointNames: String; positions: BABYLON.Vector3[] }
+  ) {
+    commit("SET_POSENET_BONE", { jointNames, positions })
   }
 }

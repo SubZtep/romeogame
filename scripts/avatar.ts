@@ -1,7 +1,6 @@
 import * as BABYLON from "babylonjs"
-import { DudeBones as DB, PosenetBones } from "~/types/bones"
-import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
-import { minPartConfidence } from "~/scripts/settings"
+import { DudeJoints as DJ } from "~/types/bones"
+import { Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { IJoint } from "~/types/joint"
 import { Joint } from "./joint"
 
@@ -13,28 +12,7 @@ export default class Avatar {
   constructor(mesh: BABYLON.AbstractMesh, skeleton: BABYLON.Skeleton) {
     this.mesh = mesh
     this.skeleton = skeleton
-
     this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
-    //this.mesh.position = new BABYLON.Vector3(300, 200, 300)
-    //this.mesh.rotation = new BABYLON.Vector3(0, 0, Math.PI)
-  }
-
-  v2dDiff(p1: Vector2D, p2: Vector2D): Vector2D {
-    return {
-      x: p1.x - p2.x,
-      y: p1.y - p2.y
-    }
-  }
-
-  v2dMiddle(p1: Vector2D, p2: Vector2D): Vector2D {
-    return {
-      x: (p1.x + p2.x) / 2.0,
-      y: (p1.y + p2.y) / 2.0
-    }
-  }
-
-  v2dDistance(p1: Vector2D, p2: Vector2D): number {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
   }
 
   /**
@@ -85,7 +63,7 @@ export default class Avatar {
     if (jointPoses[name] === undefined) {
       throw new Error(`Unkown joint ${name}`)
     }
-    return new Joint(name, this.skeleton.bones[DB[name]], jointPoses[name])
+    return new Joint(name, this.skeleton.bones[DJ[name]], jointPoses[name])
   }
 
   /**
@@ -103,7 +81,7 @@ export default class Avatar {
     //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
 
     // Init default Dude positions
-    this.rootJoint = new Joint("root", this.skeleton.bones[DB.root], BABYLON.Vector3.Zero())
+    this.rootJoint = new Joint("root", this.skeleton.bones[DJ.root], BABYLON.Vector3.Zero())
     this.rootJoint
       .addChild(this.getNamedJoint("crest"))
       .addChild(this.getNamedJoint("waist"))
@@ -184,35 +162,20 @@ export default class Avatar {
     })
   }
 
-  updateKeypoints(keypoints: Keypoint[]): void {
-    //console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSss")
-    keypoints.forEach(keypoint => {
-      if (keypoint.score >= minPartConfidence) {
-        if (["leftEye"].includes(keypoint.part)) {
-          const boneIndex = PosenetBones[keypoint.part]
-          if (boneIndex !== undefined) {
-            //console.log(keypoint.position.x + " - " + keypoint.position.y)
-            this.skeleton.bones[boneIndex].setPosition(
-              new BABYLON.Vector3(keypoint.position.x, keypoint.position.y, 300)
-            )
-          }
-        }
+  getJoint(name: string): IJoint {
+    return this.searchJoint(this.rootJoint, name)
+  }
 
-        // if (keypoint.part === "leftHip") {
-        //   this.skeleton.bones[0].setPosition(
-        //     new BABYLON.Vector3(keypoint.position.x, keypoint.position.y, -600)
-        //   )
-        // }
-
-        // const boneIndex = DudePosenetBones[keypoint.part]
-        // if (boneIndex !== undefined) {
-        //   //console.log(keypoint.position.x + " - " + keypoint.position.y)
-        //   this.skeleton.bones[boneIndex].setPosition(
-        //     new BABYLON.Vector3(keypoint.position.x, keypoint.position.y, -600)
-        //   )
-        // }
+  searchJoint(joint: IJoint, name: string, level: number = 0): IJoint {
+    if (joint.name === name) {
+      return joint
+    } else if (joint.children.length > 0) {
+      let res = null
+      for (let i = 0, len = joint.children.length; res === null && i < len; i++) {
+        res = this.searchJoint(joint.children[i], name, level + 1)
       }
-    })
-    //console.log("EEEEEEEEEEEEEEEEEEEEEEEEEE")
+      return res
+    }
+    return null
   }
 }

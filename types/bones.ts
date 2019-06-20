@@ -1,7 +1,7 @@
 /**
  * Dude model bone mapping
  */
-export enum DudeBones {
+export enum DudeJoints {
   root = 0,
   crest = 1,
   waist = 2,
@@ -45,7 +45,7 @@ export enum DudeBones {
 /**
  * Posenet return values
  */
-export enum PosenetBones {
+export enum PosenetJoints {
   nose = 0,
   leftEye = 1,
   rightEye = 2,
