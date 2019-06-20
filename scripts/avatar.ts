@@ -63,7 +63,7 @@ export default class Avatar {
     if (jointPoses[name] === undefined) {
       throw new Error(`Unkown joint ${name}`)
     }
-    return new Joint(name, this.skeleton.bones[DJ[name]], jointPoses[name])
+    return new Joint(name, jointPoses[name], [], this.skeleton.bones[DJ[name]])
   }
 
   /**
@@ -81,7 +81,7 @@ export default class Avatar {
     //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
 
     // Init default Dude positions
-    this.rootJoint = new Joint("root", this.skeleton.bones[DJ.root], BABYLON.Vector3.Zero())
+    this.rootJoint = new Joint("root", BABYLON.Vector3.Zero(), [], this.skeleton.bones[DJ.root])
     this.rootJoint
       .addChild(this.getNamedJoint("crest"))
       .addChild(this.getNamedJoint("waist"))

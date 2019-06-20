@@ -6,26 +6,28 @@ import { IJoint } from "~/types/joint"
  */
 export class Joint implements IJoint {
   name: string
-  bone: BABYLON.Bone
+  bone: BABYLON.Bone | null
   private _position: BABYLON.Vector3
   children: IJoint[]
 
   constructor(
     name: string,
-    bone: BABYLON.Bone,
     position: BABYLON.Vector3 = BABYLON.Vector3.Zero(),
-    children: IJoint[] = []
+    children: IJoint[] = [],
+    bone: BABYLON.Bone = null
   ) {
     this.name = name
+    this.children = children
     this.bone = bone
     this.position = position
-    this.children = children
   }
 
   set position(pos: BABYLON.Vector3) {
     this._position = pos
     //this._position.x += 10 // makes avatar much taller (funny)
-    this.bone.setPosition(this._position)
+    if (this.bone !== null) {
+      this.bone.setPosition(this._position)
+    }
   }
 
   get position() {
