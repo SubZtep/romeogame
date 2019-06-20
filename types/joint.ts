@@ -2,7 +2,7 @@ import * as BABYLON from "babylonjs"
 
 export interface IJoint {
   name: string
-  position: BABYLON.Vector3
+  transform: ITransform
   children: IJoint[]
   bone: BABYLON.Bone | null
 
@@ -10,4 +10,10 @@ export interface IJoint {
   addChildren(joints: IJoint[]): IJoint[]
   hasChild(): boolean
   child(name: string): IJoint
+}
+
+export interface ITransform {
+  position: BABYLON.Vector3
+  rotation: BABYLON.Vector3
+  //scaling: BABYLON.Vector3
 }

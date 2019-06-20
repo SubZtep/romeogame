@@ -2,16 +2,19 @@
  * Basic Babylonjs helper
  */
 import * as BABYLON from "babylonjs"
+import { string2map } from "./utils"
 
 export default class {
   canvas: HTMLCanvasElement
   engine: BABYLON.Engine
   scene: BABYLON.Scene
   camera: BABYLON.TargetCamera
+  materials: Map<string, BABYLON.Material> = new Map<string, BABYLON.Material>()
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
     this.initBabylon()
+    this.createMaterials()
   }
 
   initBabylon() {
@@ -30,6 +33,28 @@ export default class {
 
     this.addLight()
     //this.addDebugBox()
+  }
+
+  /** Create some default material with basic colours for the good */
+  private createMaterials() {
+    this.materials.set("red", this.createColorMaterial(BABYLON.Color3.Red()))
+    this.materials.set("green", this.createColorMaterial(BABYLON.Color3.Green()))
+    this.materials.set("white", this.createColorMaterial(BABYLON.Color3.White()))
+    this.materials.set("magenta", this.createColorMaterial(BABYLON.Color3.Magenta()))
+    this.materials.set("black", this.createColorMaterial(BABYLON.Color3.Black()))
+    this.materials.set("yellow", this.createColorMaterial(BABYLON.Color3.Yellow()))
+  }
+
+  /**
+   * Create a material from a single colour
+   * @param color
+   */
+  createColorMaterial(color: BABYLON.Color3): BABYLON.StandardMaterial {
+    const color4 = BABYLON.Color4.FromColor3(color)
+    const mat = new BABYLON.StandardMaterial(color4.toString(), this.scene)
+    mat.alpha = color4.a
+    mat.diffuseColor = new BABYLON.Color3(color4.r, color4.g, color4.b)
+    return mat
   }
 
   addUniversalCamera() {
@@ -96,17 +121,6 @@ export default class {
     this.engine.stopRenderLoop()
     this.scene.dispose()
     this.engine.dispose()
-  }
-
-  /**
-   * Create a material from a single colour
-   * @param color
-   */
-  createMaterial(color: BABYLON.Color4): BABYLON.StandardMaterial {
-    const mat = new BABYLON.StandardMaterial(color.toString(), this.scene)
-    mat.alpha = color.a
-    mat.diffuseColor = new BABYLON.Color3(color.r, color.g, color.b)
-    return mat
   }
 
   /**

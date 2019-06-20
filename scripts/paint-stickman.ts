@@ -6,7 +6,7 @@ export default class PaintStickman extends Painter {
    * Representation of a join (cube atm)
    * @param color Joint color
    */
-  createJoint(material: BABYLON.StandardMaterial, jointName = ""): BABYLON.Mesh {
+  createJoint(material: BABYLON.Material, jointName = ""): BABYLON.Mesh {
     const sphere = BABYLON.MeshBuilder.CreateBox(jointName, { size: 10 }, this.scene)
     sphere.material = material
     sphere.position = new BABYLON.Vector3(0, 0, 0)

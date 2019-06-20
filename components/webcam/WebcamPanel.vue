@@ -5,20 +5,21 @@
     :width="352"
     :height="288"
     :pose-detection="poseDetection"
-    :adjacents="adjacents")
+    :skeleton="skeleton")
 
-  label.block.mt-8.text-orange-500
-    input.mr-2(
-      type="checkbox"
-      v-model="poseDetection")
-    | Pose Detection
+  .mt-8
+    label.mr-5.text-orange-500
+      input.mr-2(
+        type="checkbox"
+        v-model="poseDetection")
+      | Pose Detection
 
-  label.block.mt-2.text-orange-500
-    input.mr-2(
-      type="checkbox"
-      v-model="adjacents"
-      :disabled="!poseDetection")
-    | Set Bones
+    label.text-orange-500
+      input.mr-2(
+        type="checkbox"
+        v-model="skeleton"
+        :disabled="!poseDetection")
+      | Set Bones
 
   RecordTPose.mt-3
 </template>
@@ -31,6 +32,6 @@ import RecordTPose from "~/components/webcam/RecordTPose.vue"
 @Component({ components: { WebcamStream, RecordTPose } })
 export default class WebcamPanelComponent extends Vue {
   poseDetection = false
-  adjacents = false
+  skeleton = false
 }
 </script>

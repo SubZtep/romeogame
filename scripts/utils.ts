@@ -1,10 +1,7 @@
-import { DudeJoints, PosenetJoints } from "~/types/bones"
+import { DudeJoints } from "~/types/joints"
 import * as BABYLON from "babylonjs"
 import { IJoint } from "~/types/joint"
-
-export function getPosenetJointNames(): string[] {
-  return Object.keys(PosenetJoints).filter(item => Number.parseInt(item).toString() !== item)
-}
+import { Keypoint } from "@tensorflow-models/posenet/dist/types"
 
 export function getDudeJointNames(): string[] {
   return Object.keys(DudeJoints).filter(item => Number.parseInt(item).toString() !== item)
@@ -29,6 +26,12 @@ export function poseFlipXY(pose: Map<string, BABYLON.Vector3>): void {
   pose.forEach(position => {
     position.x = -position.x
     position.y = -position.y
+  })
+}
+
+export function keypointsFlipY(keypoints: Keypoint[]): void {
+  keypoints.forEach(kp => {
+    kp.position.y = -kp.position.y
   })
 }
 

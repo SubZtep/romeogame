@@ -23,11 +23,12 @@ div
 
 <script lang="ts">
 import { Component, Vue, Prop, Action, Watch } from "nuxt-property-decorator"
-import Poses from "~/scripts/poses"
+import * as BABYLON from "babylonjs"
 import { Pose, Keypoint } from "@tensorflow-models/posenet/dist/types"
 import { getAdjacentKeyPoints } from "@tensorflow-models/posenet/dist/util"
+import Poses from "~/scripts/poses"
+import { keypointsFlipY } from "~/scripts/utils"
 import { minPoseConfidence, minPartConfidence, haluCam } from "~/scripts/settings"
-import * as BABYLON from "babylonjs"
 
 declare let navigator: any
 
@@ -39,7 +40,7 @@ export default class WebcamStreamComponent extends Vue {
   @Prop({ default: 352 }) width!: number
   @Prop({ default: 288 }) height!: number
   @Prop({ default: false }) poseDetection!: boolean
-  @Prop({ default: false }) adjacents!: boolean
+  @Prop({ default: false }) skeleton!: boolean
 
   loading = true
   haluCam: boolean = haluCam
@@ -54,9 +55,6 @@ export default class WebcamStreamComponent extends Vue {
   @Action("resetPosenetBones", { namespace: "player" }) resetPosenetBones: Function
   @Action("setPosenetBone", { namespace: "player" }) setPosenetBone: Function
 
-  @Action("setKeypoints", { namespace: "player" }) setKeypoints: Function
-  @Action("setAdjacents", { namespace: "player" }) setAdjacents: Function
-
   @Watch("poseDetection", { immediate: true })
   onPoseDetectionChanged(val: boolean) {
     if (val) {
@@ -65,34 +63,32 @@ export default class WebcamStreamComponent extends Vue {
   }
 
   async mounted() {
-    // Load video
-
+    // Load camera stream as video
     try {
       this.video = await this.setupCamera()
     } catch (e) {
       console.log("Error setup camera", e)
       this.video = null
     }
-
     if (this.video !== null) {
       this.video.play()
-
       const canvas = this.$refs.output as HTMLCanvasElement
       this.ctx = canvas.getContext("2d") as CanvasRenderingContext2D
       canvas.width = this.width
       canvas.height = this.height
     }
-
     this.loading = false
   }
 
   beforeDestroy() {
+    // Destroy webcam stream
     if (this.video !== null) {
       this.video.pause()
       this.stream.getTracks()[0].stop()
     }
   }
 
+  /** Setup webcam */
   async setupCamera(): Promise<HTMLVideoElement> {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw new Error("Browser API navigator.mediaDevices.getUserMedia not available")
@@ -120,49 +116,64 @@ export default class WebcamStreamComponent extends Vue {
     })
   }
 
+  /** Init Posenet */
   async detectPoseInRealTime() {
     this.poses = new Poses(this.video, this.ctx, false)
     await this.poses.init()
     await this.posesLoop()
   }
 
+  /** Pose detection frame */
   async posesLoop() {
     // Get keypoints and draw on camera view
     const pose: Pose = await this.poses.poseDetectionFrame(minPoseConfidence, minPartConfidence)
+    keypointsFlipY(pose.keypoints) //FIXME: store with correct coords but doulecheck poseDetectionFrame
+
     this.resetPosenetJoints()
     this.resetPosenetBones()
 
     if (pose.score >= minPoseConfidence) {
-      // Set keypoints
-      pose.keypoints.forEach((keypoint: Keypoint) => {
-        if (keypoint.score >= minPartConfidence) {
-          this.setPosenetJoint({
-            jointName: keypoint.part,
-            position: new BABYLON.Vector3(keypoint.position.x, keypoint.position.y)
-          })
-        }
-      })
+      this.setPosenetJoints(pose.keypoints)
 
       // Set skeleton
-      if (this.adjacents) {
-        const keypoints: Keypoint[][] = getAdjacentKeyPoints(pose.keypoints, minPartConfidence)
-        keypoints.forEach((keypoints: Keypoint[]) => {
-          if (keypoints[0].score >= minPartConfidence && keypoints[1].score >= minPartConfidence) {
-            this.setPosenetBone({
-              jointNames: `${keypoints[0].part}-${keypoints[1].part}`,
-              positions: [
-                new BABYLON.Vector3(keypoints[0].position.x, keypoints[0].position.y),
-                new BABYLON.Vector3(keypoints[1].position.x, keypoints[1].position.y)
-              ]
-            })
-          }
-        })
+      if (this.skeleton) {
+        this.setPosenetBones(pose.keypoints)
       }
     }
 
     if (this.poseDetection && this.video && !this.video.paused) {
       window.requestAnimationFrame(this.posesLoop)
     }
+  }
+
+  setPosenetJoints(keypoints: Keypoint[]) {
+    // Set keypoints
+    keypoints.forEach((keypoint: Keypoint) => {
+      if (keypoint.score >= minPartConfidence) {
+        this.setPosenetJoint({
+          jointName: keypoint.part,
+          position: new BABYLON.Vector3(keypoint.position.x, keypoint.position.y)
+        })
+      }
+    })
+  }
+
+  setPosenetBones(keypoints: Keypoint[]) {
+    const bonesKeypoints: Keypoint[][] = getAdjacentKeyPoints(keypoints, minPartConfidence)
+    bonesKeypoints.forEach((boneKeypoints: Keypoint[]) => {
+      if (
+        boneKeypoints[0].score >= minPartConfidence &&
+        boneKeypoints[1].score >= minPartConfidence
+      ) {
+        this.setPosenetBone({
+          jointNames: `${boneKeypoints[0].part}-${boneKeypoints[1].part}`,
+          positions: [
+            new BABYLON.Vector3(boneKeypoints[0].position.x, boneKeypoints[0].position.y),
+            new BABYLON.Vector3(boneKeypoints[1].position.x, boneKeypoints[1].position.y)
+          ]
+        })
+      }
+    })
   }
 }
 </script>

@@ -8,7 +8,8 @@ div
 import { setTimeout } from "timers"
 import { Component, Vue, Getter } from "nuxt-property-decorator"
 import * as BABYLON from "babylonjs"
-import { getPosenetJointNames, map2string } from "~/scripts/utils"
+import { PosenetBoneJoint } from "~/types/joints"
+import { map2string } from "~/scripts/utils"
 import { recCountdownStart, TPoseStorageName } from "~/scripts/settings"
 
 @Component
@@ -33,7 +34,7 @@ export default class RecordTPoseComponent extends Vue {
   }
 
   recordPose() {
-    const valid: boolean = getPosenetJointNames().length === this.posenetJoints.size
+    const valid: boolean = Object.values(PosenetBoneJoint).length === this.posenetJoints.size
     if (valid) {
       const joints = new Map<string, BABYLON.Vector3>()
       this.posenetJoints.forEach((position, jointName) => {

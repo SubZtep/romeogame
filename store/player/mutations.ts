@@ -1,5 +1,5 @@
-import { PlayerState } from "~/types/stores"
 import * as BABYLON from "babylonjs"
+import { PlayerState } from "~/types/stores"
 
 export default {
   RESET_POSENET_JOINTS(state: PlayerState) {

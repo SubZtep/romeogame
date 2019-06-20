@@ -22,7 +22,7 @@
       DrawStickman(
         v-if="panel.stickman"
         ref="stickmanPanel")
-      DrawAvatar(
+      //-DrawAvatar(
         v-if="panel.avatar"
         ref="avatarPanel")
 </template>
@@ -31,15 +31,16 @@
 import { Component, Vue } from "nuxt-property-decorator"
 import WebcamPanel from "~/components/webcam/WebcamPanel.vue"
 import DrawStickman from "~/components/DrawStickman.vue"
-import DrawAvatar from "~/components/DrawAvatar.vue"
+//import DrawAvatar from "~/components/DrawAvatar.vue"
 
-@Component({ components: { WebcamPanel, DrawStickman, DrawAvatar } })
+//@Component({ components: { WebcamPanel, DrawStickman, DrawAvatar } })
+@Component({ components: { WebcamPanel, DrawStickman } })
 export default class IndexPage extends Vue {
   // Visible panels
   panel = {
-    webcam: false,
-    stickman: false,
-    avatar: true
+    webcam: true,
+    stickman: true,
+    avatar: false
   }
 
   poseDetection: false

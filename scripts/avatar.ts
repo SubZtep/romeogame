@@ -1,5 +1,5 @@
 import * as BABYLON from "babylonjs"
-import { DudeJoints as DJ } from "~/types/bones"
+import { DudeJoints as DJ } from "~/types/joints"
 import { Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { Joint } from "./joint"
 import Formation from "./formation"
@@ -91,6 +91,7 @@ export default class Avatar extends Formation {
 
   /** Create all avatar joints from hardcoded values */
   setJoints(): void {
+    //TODO: I need rotation here
     //const waist: Vector2D = this.v2dMiddle(kp.leftHip, kp.rightHip)
 
     // Init default Dude positions
