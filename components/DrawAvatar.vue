@@ -94,8 +94,6 @@ export default class DrawAvatarComponent extends Vue {
         )
       )
     }
-
-    console.log("stickmanSpheres", this.stickmanSpheres)
   }
 
   doTPose() {
