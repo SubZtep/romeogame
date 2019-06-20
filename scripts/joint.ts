@@ -6,9 +6,9 @@ import { IJoint } from "~/types/joint"
  */
 export class Joint implements IJoint {
   name: string
-  bone: BABYLON.Bone | null
   private _position: BABYLON.Vector3
   children: IJoint[]
+  bone: BABYLON.Bone | null
 
   constructor(
     name: string,
@@ -19,7 +19,7 @@ export class Joint implements IJoint {
     this.name = name
     this.children = children
     this.bone = bone
-    this.position = position
+    this.position = position || BABYLON.Vector3.Zero()
   }
 
   set position(pos: BABYLON.Vector3) {

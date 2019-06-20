@@ -10,7 +10,14 @@ import * as BABYLON from "babylonjs"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { TPoseStorageName } from "~/scripts/settings"
 import Stickman from "~/scripts/stickman"
-import { getPosenetJointNames, string2map } from "~/scripts/utils"
+import {
+  jointWalker,
+  getPosenetJointNames,
+  getDudeJointNames,
+  string2map,
+  v2dSubtract
+} from "~/scripts/utils"
+import { IJoint } from "../types/joint"
 
 @Component
 export default class DrawAvatarComponent extends Vue {
@@ -20,10 +27,16 @@ export default class DrawAvatarComponent extends Vue {
   @Getter("getPosenetJoints", { namespace: "player" }) posenetJoints: Map<string, BABYLON.Vector3>
   @Getter("getPosenetBones", { namespace: "player" }) posenetBones: Map<string, BABYLON.Vector3[]>
 
+  @Watch("posenetJoints")
+  onPosenetJointsChange(joints: Map<string, BABYLON.Vector3>) {
+    this.doTPose(joints)
+  }
+
   loaded = false
   painter: PaintAvatar
   avatar: Avatar
   stickman: Stickman
+  stickmanSpheres: BABYLON.Mesh[] = []
 
   resizeEngine() {
     this.painter.engine.resize()
@@ -33,7 +46,7 @@ export default class DrawAvatarComponent extends Vue {
     this.painter = new PaintAvatar(this.$refs.render as HTMLCanvasElement)
     this.painter.addArcRorateCamera()
     //this.painter.scene.debugLayer.show()
-    this.painter.gameLoop()
+    //this.painter.gameLoop()
 
     // Load Dude model
     BABYLON.SceneLoader.ImportMesh(
@@ -56,13 +69,20 @@ export default class DrawAvatarComponent extends Vue {
     this.doTPose()
   }
 
-  doTPose() {
-    const poseStr: string | null = localStorage.getItem(TPoseStorageName)
-    if (poseStr === null) return
-
+  doTPose(pose: Map<string, BABYLON.Vector3> | null = null) {
     // Init stickman
     this.stickman = new Stickman()
-    this.stickman.pose = string2map(poseStr) as Map<string, BABYLON.Vector3>
+
+    if (pose !== null) {
+      this.stickman.pose = pose
+    } else {
+      const poseStr: string | null = localStorage.getItem(TPoseStorageName)
+      if (poseStr === null) {
+        throw new Error("No pose found")
+      }
+      this.stickman.pose = string2map(poseStr)
+    }
+
     this.stickman.dirtyResize()
     this.stickman.setJoints(this.avatar)
 
@@ -74,15 +94,33 @@ export default class DrawAvatarComponent extends Vue {
       BABYLON.Color4.FromColor3(BABYLON.Color3.Yellow())
     )
 
-    // Draw joints
-    // this.stickman.pose.forEach((position, jointName) => {
-    //   this.painter.createSphere(blue, position, 0.5)
-    // })
+    // Delete old spheres
+    for (const sphere of this.stickmanSpheres) {
+      sphere.dispose()
+    }
+    this.stickmanSpheres = []
+
+    // Draw stickman joints
     const ojNames = getPosenetJointNames()
-    this.stickman.jointsWalker(this.stickman.rootJoint)
-    this.stickman.joints.forEach(joint => {
-      this.painter.createSphere(ojNames.includes(joint.name) ? blue : yellow, joint.position, 0.5)
-    })
+    for (const joint of jointWalker(this.stickman.rootJoint)) {
+      this.stickmanSpheres.push(
+        this.painter.createSphere(ojNames.includes(joint.name) ? blue : yellow, joint.position, 0.2)
+      )
+    }
+
+    // Follow basics
+    for (const side of ["left", "right"]) {
+      const stickSide = side === "left" ? "right" : "left"
+      const stickPos = this.stickman.getJoint(`${stickSide}Wrist`).position
+      this.avatar.getJoint(`${side}Wrist`).bone.setPosition(
+        //new BABYLON.Vector3(stickPos.x * 10, stickPos.y * 10, stickPos.z), // for T
+        new BABYLON.Vector3(stickPos.x, stickPos.y, stickPos.z),
+        BABYLON.Space.WORLD,
+        this.avatar.mesh
+      )
+    }
+
+    this.painter.scene.render()
   }
 }
 </script>

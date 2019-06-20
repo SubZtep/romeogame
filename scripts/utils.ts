@@ -1,8 +1,20 @@
-import { PosenetJoints } from "~/types/bones"
+import { DudeJoints, PosenetJoints } from "~/types/bones"
 import * as BABYLON from "babylonjs"
+import { IJoint } from "~/types/joint"
 
 export function getPosenetJointNames(): string[] {
   return Object.keys(PosenetJoints).filter(item => Number.parseInt(item).toString() !== item)
+}
+
+export function getDudeJointNames(): string[] {
+  return Object.keys(DudeJoints).filter(item => Number.parseInt(item).toString() !== item)
+}
+
+export function* jointWalker(joint: IJoint, level: number = 0): IterableIterator<IJoint> {
+  yield joint
+  for (const child of joint.children) {
+    yield* jointWalker(child, level + 1)
+  }
 }
 
 export function map2string(map: Map<string, any>): string {
@@ -31,7 +43,9 @@ export function poseMove(pose: Map<string, BABYLON.Vector3>, direction: BABYLON.
 /**
  * Get middle point between two coordinates
  */
-export function v2dMiddle(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vector3 {
+export function v3dMiddle(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vector3 {
+  if (!p1) p1 = BABYLON.Vector3.Zero()
+  if (!p2) p2 = BABYLON.Vector3.Zero()
   return new BABYLON.Vector3((p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0, (p1.z + p2.z) / 2.0)
 }
 
@@ -39,5 +53,16 @@ export function v2dMiddle(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vec
  * Get distance between two coordinates, check only x and y
  */
 export function v2dDistance(p1: BABYLON.Vector3, p2: BABYLON.Vector3): number {
+  if (!p1) p1 = BABYLON.Vector3.Zero()
+  if (!p2) p2 = BABYLON.Vector3.Zero()
   return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
+}
+
+/**
+ * Substract p2 position from p1 position, check only x and y
+ */
+export function v2dSubtract(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vector3 {
+  if (!p1) p1 = BABYLON.Vector3.Zero()
+  if (!p2) p2 = BABYLON.Vector3.Zero()
+  return new BABYLON.Vector3(p1.x - p2.x, p1.y - p2.y)
 }

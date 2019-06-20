@@ -1,18 +1,22 @@
 import * as BABYLON from "babylonjs"
 import { DudeJoints as DJ } from "~/types/bones"
 import { Vector2D } from "@tensorflow-models/posenet/dist/types"
-import { IJoint } from "~/types/joint"
 import { Joint } from "./joint"
+import Formation from "./formation"
+import { getDudeJointNames } from "~/scripts/utils"
 
-export default class Avatar {
+export default class Avatar extends Formation {
   mesh: BABYLON.AbstractMesh
   skeleton: BABYLON.Skeleton
-  rootJoint: IJoint
+  dudeJointNames: string[] = []
+  //stickman: Stickman | null = null
 
   constructor(mesh: BABYLON.AbstractMesh, skeleton: BABYLON.Skeleton) {
+    super()
     this.mesh = mesh
     this.skeleton = skeleton
     this.mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
+    this.dudeJointNames = getDudeJointNames()
   }
 
   /**
@@ -63,6 +67,7 @@ export default class Avatar {
     if (jointPoses[name] === undefined) {
       throw new Error(`Unkown joint ${name}`)
     }
+
     return new Joint(name, jointPoses[name], [], this.skeleton.bones[DJ[name]])
   }
 
@@ -148,34 +153,5 @@ export default class Avatar {
             break
         }
       })
-  }
-
-  /**
-   * Walk in the bone tree
-   * @param joint Current joint
-   * @param level Current depth
-   */
-  jointWalker(joint: IJoint, level: number = 0) {
-    console.log(`${"-".repeat(level)} ${joint.name} ${joint.position.toString()}`)
-    joint.children.forEach(child => {
-      this.jointWalker(child, level + 1)
-    })
-  }
-
-  getJoint(name: string): IJoint {
-    return this.searchJoint(this.rootJoint, name)
-  }
-
-  searchJoint(joint: IJoint, name: string, level: number = 0): IJoint {
-    if (joint.name === name) {
-      return joint
-    } else if (joint.children.length > 0) {
-      let res = null
-      for (let i = 0, len = joint.children.length; res === null && i < len; i++) {
-        res = this.searchJoint(joint.children[i], name, level + 1)
-      }
-      return res
-    }
-    return null
   }
 }

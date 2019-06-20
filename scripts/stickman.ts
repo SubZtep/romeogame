@@ -1,12 +1,12 @@
 import * as BABYLON from "babylonjs"
-import { poseFlipXY, poseMove, v2dMiddle, v2dDistance } from "~/scripts/utils"
+import { poseFlipXY, poseMove, v3dMiddle, v2dDistance, v2dSubtract } from "~/scripts/utils"
 import { IJoint } from "~/types/joint"
-import { Joint } from "./joint"
+import { Joint } from "~/scripts/joint"
 import Avatar from "./avatar"
+import Formation from "./formation"
 
-export default class Stickman {
+export default class Stickman extends Formation {
   pose: Map<string, BABYLON.Vector3>
-  rootJoint: IJoint
   joints: IJoint[] = []
 
   dirtyResize() {
@@ -27,8 +27,7 @@ export default class Stickman {
   setJoints(avatar: Avatar): void {
     this.rootJoint = new Joint("root", new BABYLON.Vector3(0, 0, 1))
 
-    //const crestPos = BABYLON.Vector3.Center(this.pose.get("leftHip"), this.pose.get("rightHip"))
-    const crestPos = v2dMiddle(this.pose.get("leftHip"), this.pose.get("rightHip"))
+    const crestPos = v3dMiddle(this.pose.get("leftHip"), this.pose.get("rightHip"))
     const waistPos = crestPos.clone()
     waistPos.y -= v2dDistance(this.pose.get("leftHip"), crestPos)
 
@@ -37,7 +36,7 @@ export default class Stickman {
 
     const upperBody1 = new Joint("upperBody1", waistPos)
     const leftHipJoint = new Joint("leftHip", this.pose.get("leftHip"))
-    const rightHipJoint = new Joint("leftHip", this.pose.get("rightHip"))
+    const rightHipJoint = new Joint("rightHip", this.pose.get("rightHip"))
 
     waistJoint.addChildren([upperBody1, leftHipJoint, rightHipJoint])
 
@@ -47,7 +46,7 @@ export default class Stickman {
       .addChild(
         new Joint(
           "upperBody4",
-          v2dMiddle(this.pose.get("leftShoulder"), this.pose.get("rightShoulder"))
+          v3dMiddle(this.pose.get("leftShoulder"), this.pose.get("rightShoulder"))
         )
       )
 
@@ -66,8 +65,8 @@ export default class Stickman {
 
     rightArm
       .addChild(new Joint("rightShoulder", this.pose.get("rightShoulder")))
-      .addChild(new Joint("rightShoulder", this.pose.get("rightElbow")))
-      .addChild(new Joint("rightShoulder", this.pose.get("rightWrist")))
+      .addChild(new Joint("rightElbow", this.pose.get("rightElbow")))
+      .addChild(new Joint("rightWrist", this.pose.get("rightWrist")))
       .addChildren([
         new Joint("rightFinger1", this.pose.get("rightWrist")),
         new Joint("rightFinger2", this.pose.get("rightWrist")),
@@ -78,8 +77,8 @@ export default class Stickman {
 
     leftArm
       .addChild(new Joint("leftShoulder", this.pose.get("leftShoulder")))
-      .addChild(new Joint("leftShoulder", this.pose.get("leftElbow")))
-      .addChild(new Joint("leftShoulder", this.pose.get("leftWrist")))
+      .addChild(new Joint("leftElbow", this.pose.get("leftElbow")))
+      .addChild(new Joint("leftWrist", this.pose.get("leftWrist")))
       .addChildren([
         new Joint("leftFinger1", this.pose.get("leftWrist")),
         new Joint("leftFinger2", this.pose.get("leftWrist")),
@@ -91,31 +90,11 @@ export default class Stickman {
     rightHipJoint
       .addChild(new Joint("rightKnee", this.pose.get("rightKnee")))
       .addChild(new Joint("rightAnkle", this.pose.get("rightAnkle")))
-      .addChild(
-        new Joint("rightFoot", this.pose.get("rightAnkle"))
-        // new Joint(
-        //   "rightFoot",
-        //   avatar.getJoint("rightFoot").position.add(this.pose.get("rightAnkle")))
-      )
+      .addChild(new Joint("rightFoot", this.pose.get("rightAnkle")))
 
     leftHipJoint
       .addChild(new Joint("leftKnee", this.pose.get("leftKnee")))
       .addChild(new Joint("leftAnkle", this.pose.get("leftAnkle")))
-      .addChild(
-        new Joint("leftFoot", this.pose.get("leftAnkle"))
-        // new Joint(
-        //   "leftFoot",
-        //   avatar.getJoint("leftFoot").position.add(this.pose.get("leftAnkle")))
-      )
-  }
-
-  jointsWalker(joint: IJoint, level: number = 0) {
-    //console.log(`${"-".repeat(level)} ${joint.name} ${joint.position.toString()}`)
-    //createSphere(this.ojNames.includes(joint.name) ? blue : yellow, joint.position, 0.5)
-    //createSphere(blue, joint.position, 0.5)
-    this.joints.push(joint)
-    joint.children.forEach(child => {
-      this.jointsWalker(child, level + 1)
-    })
+      .addChild(new Joint("leftFoot", this.pose.get("leftAnkle")))
   }
 }
