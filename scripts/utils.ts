@@ -27,3 +27,17 @@ export function poseMove(pose: Map<string, BABYLON.Vector3>, direction: BABYLON.
     position.z += direction.z
   })
 }
+
+/**
+ * Get middle point between two coordinates, check only x and y
+ */
+export function v2dMiddle(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vector3 {
+  return new BABYLON.Vector3((p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0)
+}
+
+/**
+ * Get distance between two coordinates, check only x and y
+ */
+export function v2dDistance(p1: BABYLON.Vector3, p2: BABYLON.Vector3): number {
+  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
+}
