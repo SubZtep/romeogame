@@ -39,7 +39,7 @@ export default class DrawStickmanComponent extends Vue {
     //this.painter.scene.debugLayer.show()
 
     this.createMaterials()
-    this.initJoints()
+    this.drawJoints()
     this.painter.gameLoop()
   }
 
@@ -78,7 +78,9 @@ export default class DrawStickmanComponent extends Vue {
     this.painter.engine.resize()
   }
 
-  initJoints() {
+  setJoints
+
+  drawJoints() {
     this.jointMeshes.set("nose", this.painter.createJoint(this.materials.get("red"), "nose"))
     this.jointMeshes.set(
       "leftEye",

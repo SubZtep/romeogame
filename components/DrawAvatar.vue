@@ -10,7 +10,7 @@ import * as BABYLON from "babylonjs"
 import { Keypoint, Vector2D } from "@tensorflow-models/posenet/dist/types"
 import { TPoseStorageName } from "~/scripts/settings"
 import Stickman from "~/scripts/stickman"
-import { string2map, poseFlipXY, poseMove } from "~/scripts/utils"
+import { getPosenetJointNames, string2map } from "~/scripts/utils"
 
 @Component
 export default class DrawAvatarComponent extends Vue {
@@ -62,20 +62,27 @@ export default class DrawAvatarComponent extends Vue {
 
     // Init stickman
     this.stickman = new Stickman()
-    this.stickman.pose = string2map(poseStr)
+    this.stickman.pose = string2map(poseStr) as Map<string, BABYLON.Vector3>
     this.stickman.dirtyResize()
+    this.stickman.setJoints(this.avatar)
 
-    // Create material for joints
-    const mat: BABYLON.Material = this.painter.createMaterial(
+    // Create materials for joints
+    const blue: BABYLON.Material = this.painter.createMaterial(
       BABYLON.Color4.FromColor3(BABYLON.Color3.Blue())
+    )
+    const yellow: BABYLON.Material = this.painter.createMaterial(
+      BABYLON.Color4.FromColor3(BABYLON.Color3.Yellow())
     )
 
     // Draw joints
-    this.stickman.pose.forEach((position, jointName) => {
-      this.painter.createSphere(mat, position, 0.5)
+    // this.stickman.pose.forEach((position, jointName) => {
+    //   this.painter.createSphere(blue, position, 0.5)
+    // })
+    const ojNames = getPosenetJointNames()
+    this.stickman.jointsWalker(this.stickman.rootJoint)
+    this.stickman.joints.forEach(joint => {
+      this.painter.createSphere(ojNames.includes(joint.name) ? blue : yellow, joint.position, 0.5)
     })
-
-    const leftElbow = this.avatar.getJoint("leftElbow")
   }
 }
 </script>

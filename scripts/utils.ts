@@ -29,10 +29,10 @@ export function poseMove(pose: Map<string, BABYLON.Vector3>, direction: BABYLON.
 }
 
 /**
- * Get middle point between two coordinates, check only x and y
+ * Get middle point between two coordinates
  */
 export function v2dMiddle(p1: BABYLON.Vector3, p2: BABYLON.Vector3): BABYLON.Vector3 {
-  return new BABYLON.Vector3((p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0)
+  return new BABYLON.Vector3((p1.x + p2.x) / 2.0, (p1.y + p2.y) / 2.0, (p1.z + p2.z) / 2.0)
 }
 
 /**

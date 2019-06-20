@@ -33,7 +33,7 @@ export default class RecordTPoseComponent extends Vue {
   }
 
   recordPose() {
-    const valid: boolean = true //getPosenetJointNames().length === this.posenetJoints.size
+    const valid: boolean = getPosenetJointNames().length === this.posenetJoints.size
     if (valid) {
       const joints = new Map<string, BABYLON.Vector3>()
       this.posenetJoints.forEach((position, jointName) => {
