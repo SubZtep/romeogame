@@ -3,10 +3,6 @@ import * as BABYLON from "babylonjs"
 import { IJoint } from "~/types/joint"
 import { Keypoint } from "@tensorflow-models/posenet/dist/types"
 
-export function getDudeJointNames(): string[] {
-  return Object.keys(DudeJoints).filter(item => Number.parseInt(item).toString() !== item)
-}
-
 export function* jointWalker(joint: IJoint, level: number = 0): IterableIterator<IJoint> {
   yield joint
   for (const child of joint.children) {
@@ -14,11 +10,11 @@ export function* jointWalker(joint: IJoint, level: number = 0): IterableIterator
   }
 }
 
-export function map2string(map: Map<string, any>): string {
+export function map2string(map: Map<any, any>): string {
   return JSON.stringify(Array.from(map.entries()))
 }
 
-export function string2map(str: string): Map<string, any> {
+export function string2map(str: string): Map<any, any> {
   return new Map(JSON.parse(str))
 }
 

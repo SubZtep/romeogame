@@ -1,4 +1,5 @@
 import { IJoint } from "~/types/joint"
+import { BoneJoint } from "~/types/joints"
 
 export default class Formation {
   rootJoint: IJoint
@@ -7,11 +8,11 @@ export default class Formation {
    * Find a joint
    * @param name Joint name
    */
-  getJoint(name: string): IJoint {
+  getJoint(name: BoneJoint): IJoint {
     return this.searchJoint(this.rootJoint, name)
   }
 
-  private searchJoint(joint: IJoint, name: string, level: number = 0): IJoint {
+  private searchJoint(joint: IJoint, name: BoneJoint, level: number = 0): IJoint {
     if (joint.name === name) {
       return joint
     } else if (joint.children.length > 0) {

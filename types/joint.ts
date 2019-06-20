@@ -1,7 +1,8 @@
 import * as BABYLON from "babylonjs"
+import { BoneJoint } from "~/types/joints"
 
 export interface IJoint {
-  name: string
+  name: BoneJoint
   transform: ITransform
   children: IJoint[]
   bone: BABYLON.Bone | null
@@ -9,7 +10,7 @@ export interface IJoint {
   addChild(joint: IJoint): IJoint
   addChildren(joints: IJoint[]): IJoint[]
   hasChild(): boolean
-  child(name: string): IJoint
+  child(name: BoneJoint): IJoint
 }
 
 export interface ITransform {

@@ -1,12 +1,16 @@
 import * as BABYLON from "babylonjs"
 import { PlayerState } from "~/types/stores"
+import { PosenetBoneJoint } from "~/types/joints"
 
 export default {
   RESET_POSENET_JOINTS(state: PlayerState) {
-    state.posenetJoints = new Map<string, BABYLON.Vector3>()
+    state.posenetJoints = new Map<PosenetBoneJoint, BABYLON.Vector3>()
   },
 
-  SET_POSENET_JOINT(state: PlayerState, payload: { jointName: string; position: BABYLON.Vector3 }) {
+  SET_POSENET_JOINT(
+    state: PlayerState,
+    payload: { jointName: PosenetBoneJoint; position: BABYLON.Vector3 }
+  ) {
     state.posenetJoints.set(payload.jointName, payload.position)
   },
 

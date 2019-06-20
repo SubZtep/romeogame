@@ -1,37 +1,42 @@
 import * as BABYLON from "babylonjs"
-import { IJoint } from "~/types/joint"
+import { IJoint, ITransform } from "~/types/joint"
+import { BoneJoint } from "~/types/joints"
 
 /**
  * Represent a joint between bones
  */
 export class Joint implements IJoint {
-  name: string
-  private _position: BABYLON.Vector3
+  name: BoneJoint
+  private _transform: ITransform
   children: IJoint[]
   bone: BABYLON.Bone | null
+  mesh: BABYLON.AbstractMesh | null
 
   constructor(
-    name: string,
-    position: BABYLON.Vector3 = BABYLON.Vector3.Zero(),
+    name: BoneJoint,
+    transform: ITransform,
     children: IJoint[] = [],
-    bone: BABYLON.Bone = null
+    bone: BABYLON.Bone = null,
+    mesh: BABYLON.AbstractMesh | null = null
   ) {
     this.name = name
     this.children = children
     this.bone = bone
-    this.position = position || BABYLON.Vector3.Zero()
+    this.transform = transform
+    this.mesh = mesh
   }
 
-  set position(pos: BABYLON.Vector3) {
-    this._position = pos
-    //this._position.x += 10 // makes avatar much taller (funny)
+  set transform(transform: ITransform) {
+    this._transform = transform
     if (this.bone !== null) {
-      this.bone.setPosition(this._position)
+      this.bone.setPosition(this._transform.position)
+      //FIXME: do rotation
+      //this.bone.setRotation(this._transform.rotation, BABYLON.Space.WORLD, this.mesh)
     }
   }
 
-  get position() {
-    return this._position
+  get transform() {
+    return this._transform
   }
 
   /**
