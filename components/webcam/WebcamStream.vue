@@ -59,6 +59,7 @@ export default class WebcamStreamComponent extends Vue {
   onPoseDetectionChanged(val: boolean) {
     if (val) {
       this.detectPoseInRealTime()
+      //this.detectPoseWebWorker()
     }
   }
 
@@ -121,6 +122,28 @@ export default class WebcamStreamComponent extends Vue {
     this.poses = new Poses(this.video, this.ctx, false)
     await this.poses.init()
     await this.posesLoop()
+  }
+
+  detectPoseWebWorker() {
+    //FIXME: Main Tensorflow include always network error in a Web Worker
+    const worker = new Worker("/workers/poses.js")
+    const imgData: Uint8ClampedArray = this.ctx.getImageData(0, 0, this.width, this.height).data
+
+    worker.onerror = function(e) {
+      console.log("Worker error", e)
+    }
+
+    worker.onmessage = function(e) {
+      console.log("MESSAGEEEE", e)
+      //worker.terminate()
+      if (e.data === "loaded") {
+        worker.postMessage(imgData)
+      }
+    }
+
+    setTimeout(() => {
+      worker.postMessage("he")
+    }, 3000)
   }
 
   /** Pose detection frame */

@@ -37,9 +37,9 @@ import DrawAvatar from "~/components/DrawAvatar.vue"
 export default class IndexPage extends Vue {
   // Visible panels
   panel = {
-    webcam: false,
-    stickman: false,
-    avatar: true
+    webcam: true,
+    stickman: true,
+    avatar: false
   }
 
   poseDetection: false
