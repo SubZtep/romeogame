@@ -1,71 +1,44 @@
-```
- __   __   __ __   ___   __   __   __   __ __   _____
-|  ' (__) |  )  ) (__/_ (__) (__| (__( |  )  ) (__/\_)
-                              __/                 °
-                                                  °
-                                                 º╬·@
- /************************************************* º
-/**                                                 °
-**                                                  °
-*/                                                  ·
-| . Bookmarks, random links that might be helpful   .                                                                                                                              | .
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -
-| letter O accents                                                  ' https://altcodeunicode.com/alt-codes-letter-o-with-accents/                                                  |.◦
-| Box moving with hand                                              : https://www.babylonjs-playground.com/#1EVNNB#14                                                              |'
-| Hand following sphere                                             · https://www.babylonjs-playground.com/#1EVNNB#15                                                              |
-| Neck rotate                                                       ; https://www.babylonjs-playground.com/#1BZJVJ#33                                                              |
-| Real-time Human Pose Estimation in the Browser with TensorFlow.js ├ https://medium.com/tensorflow/real-time-human-pose-estimation-in-the-browser-with-tensorflow-js-7dd0bc881cd5 |
-                                                                    ¿
-                                                                    ?
-                                                             '''⌐(ಠ۾ಠ)¬'''
-                                                             ┏(°.°)┓ ┏(°.°)┓
-                                                     ♪┏(°.°)┛┗(°.°)┓ ┏(°.°)┛┗(°.°)┓
-                                                     ♪       ┏(°.°)┛ ┗(°.°)┓       ♪
-                                                     ♪       ┗(°.°)┓ ┏(°.°)┛       ♪
-                                                     ♪             ♪ ♪             ♪
-                                                     ┗(-_- )┓┏(-_-)┛ ┗(-_- )┓┏(-_-)┛
-                                                     (ಠ⌣ಠ)              (ಥ⌣ಥ)
-(-----------------------------------------------------)
-# Available Commands
-#
-* `yarn` - Install all dependencies
-* `yarn dev` - Compile the project in development mode
-* `yarn watch` - Watch files, compile any changes in real time (this is your main command)
-* `yarn build` - Compile the project in production mode
-·
-## 1337
-|  \Add Font Awesome PRO
-### Checklist
- ·
-[█] do something
-[█] create project
-[█] install random npm packages and hope it will do something
-[▓] create git repo and commit the mess for reference
-[▒] slightly refactor and make the code works
-[▒] update the test video with key body joints
-[▒]
-[ ]
-[ ]
-[ ]¦̵̱ ̵̱ ̵̱ ̵̱ ̵̱(̢ ̡͇̅└͇̅┘͇̅ (▤8כ−◦
-[_]
- ¦
-## File Structure
- ·
- * `src/js/main.js` - Entry point
- * `src/pug/index.pug` - Html template
- * `src/scss/main.scss` - Css
- * `dist/` - Target folder
- ·
-## ...
-     ·
-_TBA_¡
-¶
-### License
-MIT
-```
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-#### /\*
+## Available Scripts
 
-#### HK pic size: 99cm x 68cm
+In the project directory, you can run:
 
-#### \*/
+### `npm start`
+
+Runs the app in the development mode.<br>
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.<br>
+You will also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.<br>
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.<br>
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br>
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).

@@ -1,24 +1,21 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": ["esnext", "esnext.asynciterable", "dom"],
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "allowJs": true,
-    "sourceMap": true,
-    "strict": true,
-    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
-    },
-    "types": ["@types/node", "@nuxt/vue-app", "@types/jest"]
+    "jsx": "react"
   },
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
