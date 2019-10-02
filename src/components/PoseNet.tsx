@@ -2,6 +2,7 @@ import * as React from "react"
 import * as posenet from "@tensorflow-models/posenet"
 import Webcam from "react-webcam"
 import DebugCanvas from "./DebugCanvas"
+import ModelCanvas from "./ModelCanvas"
 
 interface IPoseNetProps {
   videoWidth?: number
@@ -57,15 +58,18 @@ const PoseNet: React.FC<IPoseNetProps> = props => {
   }
 
   return (
-    <div className="relative">
-      <Webcam
-        audio={false}
-        mirrored={true}
-        onUserMedia={loadPoseNet}
-        ref={webcamRef}
-        className="absolute"
-      />
-      <DebugCanvas width={videoWidth} height={videoHeight} keypoints={keypoints} />
+    <div className="flex">
+      <div className="relative" style={{ width: videoWidth, height: videoHeight }}>
+        <Webcam
+          audio={false}
+          mirrored={true}
+          onUserMedia={loadPoseNet}
+          ref={webcamRef}
+          className="absolute"
+        />
+        <DebugCanvas width={videoWidth} height={videoHeight} keypoints={keypoints} />
+      </div>
+      <ModelCanvas width={videoWidth} height={videoHeight} keypoints={keypoints} />
     </div>
   )
 }
